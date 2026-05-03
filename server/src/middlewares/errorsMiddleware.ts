@@ -1,10 +1,11 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import Boom from '@hapi/boom';
 
 export const errorsMiddleware = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
+  _next: NextFunction
 ) => {
   const boomError = Boom.isBoom(error) ? error : Boom.boomify(error);
   const payload = {

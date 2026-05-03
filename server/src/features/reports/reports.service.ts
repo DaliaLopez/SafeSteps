@@ -1,0 +1,128 @@
+import { pool } from '../../config/database';
+import Boom from '@hapi/boom';
+import type {
+    CreateReportDTO,
+    UpdateReportStatusDTO,
+} from './reports.types';
+
+// Obtener todos los reportes (debug/admin)
+export const getReportsService = async () => {
+    const result = await pool.query(`SELECT * FROM reports`);
+    return result.rows;
+};
+
+// Obtener un reporte específico
+export const getReportByIdService = async (id: string) => {
+    const result = await pool.query(
+        `SELECT * FROM reports WHERE id = $1`,
+        [id]
+    );
+
+    if (result.rows.length === 0) {
+        throw Boom.notFound('Report not found');
+    }
+
+    return result.rows[0];
+};
+
+// Lista de pendientes para el admin
+// Aquí es donde el admin decide aprobar o rechazar
+export const getPendingReportsService = async () => {
+    const result = await pool.query(`
+        SELECT r.*, u.name as reporter_name 
+        FROM reports r
+        JOIN users u ON r.user_id = u.id
+        WHERE r.status = 'Pendiente'
+        ORDER BY r.created_at ASC
+    `);
+
+    return result.rows;
+};
+
+// Crear reporte (lo hace el usuario)
+// Ej: "hay una escalera dañada aquí"
+// Guarda un PUNTO en el mapa (no área)
+export const createReportService = async (report: CreateReportDTO) => {
+    try {
+        const result = await pool.query(
+            `INSERT INTO reports(user_id, description, problem_type, danger_level, location) 
+            VALUES ($1, $2, $3, $4, ST_SetSRID(ST_MakePoint($5, $6), 4326)::geography) 
+            RETURNING *`,
+            [
+                report.user_id,
+                report.description,
+                report.problem_type,
+                report.danger_level,
+                report.longitude,
+                report.latitude,
+            ]
+        );
+
+        return result.rows[0];
+    } catch (error) {
+        console.error(error);
+        throw Boom.badRequest('Error creating report');
+    }
+};
+
+// Cambiar estado del reporte
+// Admin decide: Pendiente → Aprobado / Rechazado
+export const updateReportStatusService = async (
+    data: UpdateReportStatusDTO
+) => {
+    const result = await pool.query(
+        `UPDATE reports SET status = $1 WHERE id = $2 RETURNING *`,
+        [data.status, data.id]
+    );
+
+    return result.rows[0];
+};
+
+// Convierte un reporte aprobado en una ALERTA REAL
+export const promoteReportToAlertService = async (reportId: string) => {
+    const result = await pool.query(
+        `INSERT INTO alerts (location_id, message)
+        SELECT l.id, r.description
+        FROM reports r, locations l
+        WHERE r.id = $1
+        AND r.status = 'Aprobado' 
+        AND ST_Intersects(l.boundary, r.location)
+        RETURNING *`,
+        [reportId]
+    );
+
+    // 1. Toma el reporte
+    // 2. Encuentra en qué zona cae
+    // 3. Crea una alerta en esa zona
+
+    return result.rows[0];
+};
+
+// Si ya no hay el problema en ese punto resuelve el problema 
+export const resolveReportService = async (reportId: string) => {
+    try {
+        // 1. marcar como resuelto
+        await pool.query(
+            `UPDATE reports SET status = 'Resuelto' WHERE id = $1`,
+            [reportId]
+        );
+
+        // 2. apagar la alerta asociada
+        await pool.query(
+            `UPDATE alerts 
+            SET is_active = false
+            WHERE location_id IN (
+                SELECT l.id
+                FROM reports r, locations l
+                WHERE r.id = $1
+                AND ST_Intersects(l.boundary, r.location)
+            )`,
+            [reportId]
+        );
+
+        return { message: 'Reporte resuelto y alerta desactivada' };
+    } catch (error) {
+        console.error(error);
+        throw Boom.badRequest('Error resolving report');
+    }
+};

@@ -152,6 +152,7 @@ INSERT INTO alerts (location_id, message)
 SELECT l.id, r.description
 FROM reports r, locations l
 WHERE r.id = $1
+AND r.status = 'Aprobado' -- CAMBIO
 AND ST_Intersects(l.boundary, r.location);
 ```
 
@@ -179,6 +180,7 @@ CREATE TABLE alerts (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     location_id UUID NOT NULL REFERENCES locations(id),
     message TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT true, --NUEVO
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ```
@@ -197,6 +199,7 @@ SELECT a.message, l.name as building_name
 FROM alerts a
 JOIN locations l ON a.location_id = l.id
 WHERE a.location_id = $1
+AND a.is_active = true -- CAMBIO
 ORDER BY a.created_at DESC
 LIMIT 1;
 ```
@@ -206,8 +209,15 @@ LIMIT 1;
 SELECT l.name, a.message, l.type
 FROM alerts a
 JOIN locations l ON a.location_id = l.id
+WHERE a.is_active = true --CAMBIO
 ORDER BY l.name ASC;
+
+-- NUEVO resolver alerta (cuando el problema ya no existe)
+UPDATE alerts 
+SET is_active = false
+WHERE location_id = $1;
 ```
+
 
 
 # Notifications
