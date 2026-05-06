@@ -7,34 +7,39 @@ interface AuthenticatedRequest extends Request {
     user?: AuthUser;
 }
 
-export const getUserFromRequest = (req: AuthenticatedRequest): AuthUser => {
-    if (req.user) {
-        return req.user;
+export const getUserId = (req: AuthenticatedRequest): string => {
+    if (!req.user) {
+        throw Boom.unauthorized('User not authenticated');
     }
-
-    throw Boom.unauthorized('User not authenticated');
+    return req.user.id;
 };
 
-export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) {
-        throw Boom.unauthorized('Authorization header is missing');
+export const authMiddleware = async (
+    req: AuthenticatedRequest,
+    _res: Response,
+    next: NextFunction
+) => {
+    try {
+        if (!req.headers.authorization) {
+            throw Boom.unauthorized('Authorization header is missing');
+        }
+
+        const token = req.headers.authorization.split(' ')[1];
+
+        if (!token) {
+            throw Boom.unauthorized('Token is missing');
+        }
+
+        const userResponse = await supabase.auth.getUser(token);
+
+        if (userResponse.error) {
+            throw Boom.unauthorized(userResponse.error.message);
+        }
+
+        req.user = userResponse.data.user;
+
+        next();
+    } catch (error) {
+        next(error);
     }
-
-    const token = req.headers.authorization.split(' ')[1];
-
-    if (!token) {
-        throw Boom.unauthorized('Token is missing');
-    }
-
-
-    const userResponse = await supabase.auth.getUser(token);
-
-    if (userResponse.error) {
-        throw Boom.unauthorized(userResponse.error.message);
-    }
-
-    console.log(userResponse.data.user);
-
-    req.user = userResponse.data.user;
-    next();
-}
+};
