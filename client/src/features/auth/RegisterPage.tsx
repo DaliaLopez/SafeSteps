@@ -21,7 +21,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      await registerService({ name, email, password, role: "admin" });
+      await registerService({ name, email, password, role: "student" });
       navigate("/login");
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Error al registrarse");

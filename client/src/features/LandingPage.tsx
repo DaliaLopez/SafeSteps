@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../../assets/LogoBlanco.png";
+import logo from "../assets/LogoBlanco.png";
 
 export default function LandingPage() {
   return (
