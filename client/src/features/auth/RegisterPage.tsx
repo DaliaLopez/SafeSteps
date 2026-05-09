@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/LogoAzul.png";
-import { registerService } from "../../services/authService";
+import { registerService } from "../../services/auth.service";
 
 export default function RegisterPage() {
   const navigate = useNavigate();

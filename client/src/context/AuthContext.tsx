@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react'
-import { loginService, logoutService } from '../services/authService'
+import { loginService, logoutService } from '../services/auth.service'
 
 interface AuthUser {
   id: string
