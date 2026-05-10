@@ -37,10 +37,20 @@ export const createUserDBService = async (user: CreateUserDBDTO) => {
 // actualizar nombre del usuario
 export const updateUserService = async (user: UpdateUserDTO) => {
     const result = await pool.query(
-        `UPDATE users SET name = $2 WHERE id = $1 RETURNING *`,
-        [user.id, user.name]
+        `UPDATE users 
+        SET name = COALESCE($2, name), 
+            email = COALESCE($3, email) 
+        WHERE id = $1 
+        RETURNING *`,
+        [
+            user.id, 
+            user.name || null, 
+            user.email || null
+        ]
     );
-
+    if (result.rows.length === 0) {
+    throw Boom.notFound('User not found');
+}
     return result.rows[0];
 };
 

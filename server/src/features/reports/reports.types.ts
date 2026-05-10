@@ -38,6 +38,7 @@ export interface CreateReportDTO {
     danger_level: DangerLevel;
     latitude: number;
     longitude: number;
+    location_name?: string;
 }
 
 // DTO update status

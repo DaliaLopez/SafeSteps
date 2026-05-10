@@ -64,3 +64,13 @@ export const createUserService = async (user: CreateUserDTO) => {
         throw Boom.internal('Database error');
     }
 };
+
+export const updateAuthService = async (userId: string, data: { email?: string, password?: string }) => {
+    const { data: user, error } = await supabase.auth.admin.updateUserById(userId, {
+        email: data.email,
+        password: data.password
+    });
+
+    if (error) throw Boom.badRequest(error.message);
+    return user;
+};
