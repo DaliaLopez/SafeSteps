@@ -33,8 +33,7 @@ export default function Reports() {
   const filteredReports = reports.filter(r => r.status === activeTab);
 
   return (
-    <div className="min-h-screen bg-[#F9FAF7] font-sans">
-      {/* Header Estilizado */}
+    <div className="min-h-screen">
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button onClick={() => navigate('/student/dashboard')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
           <ArrowLeft size={22} className="text-gray-800" />
@@ -57,7 +56,7 @@ export default function Reports() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center pt-32 text-center px-8">
+          <div className="flex flex-col items-center justify-center pt-12 text-center px-8">
             <div className="bg-white p-8 rounded-[40px] mb-6 shadow-sm border border-gray-50 text-gray-200">
               <FileText size={60} strokeWidth={1} />
             </div>

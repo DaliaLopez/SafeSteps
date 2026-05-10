@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface MenuOptionProps {
     label: string;
@@ -9,9 +9,9 @@ interface MenuOptionProps {
 export const MenuOption = ({ label, icon, path }: MenuOptionProps) => {
     const navigate = useNavigate();
     return (
-        <button 
+        <button
             onClick={() => navigate(path)}
-            className="w-full bg-white p-3 rounded-2xl flex items-center justify-between shadow-sm border border-gray-50 active:scale-[0.98] transition-all"
+            className="w-full bg-white p-2 rounded-2xl flex items-center justify-between shadow-sm border border-gray-50 active:scale-[0.98] transition-all"
         >
             <div className="flex items-center gap-4">
                 <div className="p-3 bg-[#F0F7FF] rounded-2xl text-[#296BFF]">

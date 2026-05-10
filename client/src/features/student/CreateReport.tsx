@@ -55,7 +55,7 @@ export default function CreateReport() {
   return (
     <div className="min-h-screen bg-[#F9F9F7]">
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
-        <button onClick={() => navigate('/student/reports')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
+        <button onClick={() => navigate('/student/dashboard')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
           <ArrowLeft size={22} className="text-gray-800" />
         </button>
         <h2 className="text-2xl font-bold text-black">Nuevo reporte</h2>

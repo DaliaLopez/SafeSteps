@@ -19,7 +19,7 @@ export const StatusFilters = ({
     return (
         <div className="mx-4 mb-5">
 
-            <div className="flex gap-2 w-full">
+            <div className="flex gap-2 px-4 w-full">
 
                 {tabs.map((tab) => (
 
