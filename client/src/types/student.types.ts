@@ -31,6 +31,7 @@ export interface CreateReportDTO {
     danger_level: DangerLevel;
     latitude: number;
     longitude: number;
+    location_name: string;
 }
 
 export interface ReportDTO {
@@ -42,6 +43,7 @@ export interface ReportDTO {
     location: string; 
     status: ReportStatus;
     created_at: string;
+    location_name:string
 }
 
 export interface NotificationDTO {

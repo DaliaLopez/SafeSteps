@@ -52,3 +52,15 @@ export const getAlertsForAccessibilityService = async (): Promise<any[]> => {
     const { data } = await api.get('/alerts/accessibility');
     return data;
 };
+
+// Retorna { aprobados: number, pendientes: number, rechazados: number }
+export const getUserReportStatsService = async (userId: string) => {
+    const { data } = await api.get(`/reports/user/${userId}/stats`);
+    return data; 
+};
+
+export const updateProfileService = async (userId: string, formData: any) => {
+    // CORRECCIÓN: Pasamos el id en la URL para que coincida con el router
+    const { data } = await api.put(`/users/${userId}`, formData);
+    return data;
+};

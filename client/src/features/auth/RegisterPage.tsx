@@ -39,7 +39,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-6">
       {/* Contenedor principal con ancho controlado y padding reducido */}
-      <div className="w-full max-w-[400px] bg-white rounded-[24px] shadow-sm p-6 md:p-8 flex flex-col items-center border border-gray-100">
+      <div className="w-full max-w-100 bg-white rounded-3xl shadow-sm p-6 md:p-8 flex flex-col items-center border border-gray-100">
         {/* Icono más pequeño para ahorrar espacio vertical */}
         <div className="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center">
           <img

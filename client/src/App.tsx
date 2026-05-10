@@ -8,7 +8,7 @@ import RegisterPage from './features/auth/RegisterPage'
 
 // Admin
 import DashboardPage from './features/admin/DashboardPage'
-import ZonePage from './features/admin/ZonePage'
+
 import PendingReportsPage from './features/admin/PendingReportsPage'
 import AlertsPage from './features/admin/AlertsPage'
 import ActivityHistoryPage from './features/admin/ActivityHistoryPage'
@@ -45,7 +45,7 @@ const App = () => {
       <Route path="/register"  element={<RegisterPage />} />
 
       <Route path="/admin/dashboard"    element={isAdmin ? <DashboardPage />       : <Navigate to="/login" />} />
-      <Route path="/admin/zones"        element={isAdmin ? <ZonePage />           : <Navigate to="/login" />} />
+
       <Route path="/admin/reports"      element={isAdmin ? <PendingReportsPage />  : <Navigate to="/login" />} />
       <Route path="/admin/alerts"       element={isAdmin ? <AlertsPage />          : <Navigate to="/login" />} />
       <Route path="/admin/activity"     element={isAdmin ? <ActivityHistoryPage /> : <Navigate to="/login" />} />

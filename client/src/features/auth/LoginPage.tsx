@@ -33,7 +33,7 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-6">
       {/* Contenedor con ancho máximo de 400px para que no se vea gigante en web */}
-      <div className="w-full max-w-[400px] bg-white rounded-[24px] shadow-sm p-6 md:p-10 flex flex-col items-center border border-gray-100">
+      <div className="w-full max-w-100 bg-white rounded-3xl shadow-sm p-6 md:p-10 flex flex-col items-center border border-gray-100">
         {/* Icono y encabezado compactos */}
         <div className="flex flex-col items-center mb-6 text-center">
           <div className="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center">
