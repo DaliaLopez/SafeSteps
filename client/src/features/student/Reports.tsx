@@ -34,6 +34,7 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen">
+      {/* Header Estilizado */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button onClick={() => navigate('/student/dashboard')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
           <ArrowLeft size={22} className="text-gray-800" />
@@ -43,7 +44,7 @@ export default function Reports() {
 
       <StatusFilters activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <main className="max-w-150 mx-auto px-6 pb-20">
+      <main className="max-w-150 mx-auto px-4 pb-20">
         {loading ? (
           <div className="flex flex-col items-center justify-center pt-32 gap-4">
             <div className="w-12 h-12 border-4 border-[#2563eb] border-t-transparent rounded-full animate-spin" />

@@ -11,7 +11,7 @@ export const UserCard = ({ name, email, role }: UserCardProps) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
         </div>
         
-        <div className="overflow-hidden">
+        <div className="flex flex-col items-start">
             <h3 className="text-xl font-bold text-[#1E293B] mb-0.5 truncate">{name}</h3>
             <p className="text-gray-500 text-sm mb-3 truncate">{email}</p>
 

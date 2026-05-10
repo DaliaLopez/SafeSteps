@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
 import { Volume2, Navigation, BellRing, LogOut, UserPen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-// Importamos tus componentes base
 import { ProfileHeader } from '../../components/accessibility/profile/ProfileHeader';
 import { UserCard } from '../../components/accessibility/profile/UserCard';
 import { MenuOption } from '../../components/accessibility/profile/MenuOption';
@@ -9,50 +9,83 @@ import { MenuOption } from '../../components/accessibility/profile/MenuOption';
 export default function AccessibilityProfile() {
     const { user, logout } = useAuth();
 
+    // --- LÓGICA DE VOZ ---
+    const speak = (text: string) => {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Anunciar al entrar
+    useEffect(() => {
+        speak("Pantalla de Perfil. Desliza para navegar por las opciones. Editar perfil. Audio y accesibilidad. Vibracion. Opciones de navegacion. Cerrar sesion");
+    }, []);
+
+    const handleLogout = () => {
+        speak("Cerrando sesión. Hasta luego.");
+        logout();
+    };
+
     return (
-        <div className="min-h-screen pb-10 bg-[#F8F9FA]">
-            {/* Header reutilizado con el título de la imagen */}
+        <div className="min-h-screen pb-10 bg-[#F9FAF7]">
+            {/* Header */}
             <ProfileHeader title="Perfil" />
 
-            <main className="max-w-md mx-auto px-6 space-y-6 pb-8">
-                {/* Tarjeta de usuario adaptada a Laura */}
-                <UserCard 
-                    name={user?.name || "Laura"} 
-                    email={user?.email || "laura@campus.u.edu"} 
-                    role="Usuario" 
-                />
+            <main className="max-w-md mx-auto px-6 space-y-8 pb-8">
+                {/* Tarjeta de usuario - Se añade tabIndex para que sea enfocable */}
+                <div 
+                    tabIndex={0} 
+                    onFocus={() => speak(`Usuario: ${user?.name || 'Laura'}. Correo: ${user?.email || 'laura@campus.u.edu'}`)}
+                    className="outline-none"
+                >
+                    <UserCard 
+                        name={user?.name || "Laura"} 
+                        email={user?.email || "laura@campus.u.edu"} 
+                        role={user?.role || "Usuario"}
+                    />
+                </div>
 
                 {/* Listado de opciones de configuración */}
-                <section className="space-y-3">
-                    <MenuOption
-                        label="Editar perfil"
-                        icon={<UserPen size={20} />}
-                        path="/accessibility/profile/edit"
-                    />
+                <section className="space-y-4">
+                    <div tabIndex={0} onFocus={() => speak("Configuración: Editar perfil")} className="outline-none">
+                        <MenuOption
+                            label="Editar perfil"
+                            icon={<UserPen size={20} />}
+                            path="/accessibility/profile/edit"
+                        />
+                    </div>
 
-                    <MenuOption
-                        label="Audio y accesibilidad"
-                        icon={<Volume2 size={20} />}
-                        path="/accessibility/settings/audio"
-                    />
+                    <div tabIndex={0} onFocus={() => speak("Configuración: Audio y accesibilidad")} className="outline-none">
+                        <MenuOption
+                            label="Audio y accesibilidad"
+                            icon={<Volume2 size={20} />}
+                            path="/accessibility/settings/audio"
+                        />
+                    </div>
 
-                    <MenuOption
-                        label="Vibración"
-                        icon={<BellRing size={20} />}
-                        path="/accessibility/settings/vibration"
-                    />
+                    <div tabIndex={0} onFocus={() => speak("Configuración: Vibración")} className="outline-none">
+                        <MenuOption
+                            label="Vibración"
+                            icon={<BellRing size={20} />}
+                            path="/accessibility/settings/vibration"
+                        />
+                    </div>
 
-                    <MenuOption
-                        label="Opciones de navegación"
-                        icon={<Navigation size={20} />}
-                        path="/accessibility/settings/navigation"
-                    />
+                    <div tabIndex={0} onFocus={() => speak("Configuración: Opciones de navegación")} className="outline-none">
+                        <MenuOption
+                            label="Opciones de navegación"
+                            icon={<Navigation size={20} />}
+                            path="/accessibility/settings/navigation"
+                        />
+                    </div>
                 </section>
 
-                {/* Botón de acción principal adaptado al estilo rojo de la imagen */}
+                {/* Botón de Salida */}
                 <button
-                    onClick={logout}
-                    className="w-full bg-[#FF1A1A] text-white p-4 rounded-3xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-red-100 active:scale-95 transition-all mt-6"
+                    onClick={handleLogout}
+                    onFocus={() => speak("Botón: Cerrar sesión")}
+                    className="w-full bg-[#FF2D2D] text-white p-5 rounded-[30px] font-bold flex items-center justify-center gap-3 shadow-xl shadow-red-100 active:scale-95 transition-all mt-10 outline-none focus:ring-4 focus:ring-red-200"
                 >
                     <LogOut size={22} />
                     Cerrar sesión

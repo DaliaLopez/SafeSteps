@@ -8,7 +8,9 @@ export interface User {
 
 export interface UpdateUserDTO {
     id: string;
-    name: string;
+    name?: string;
+    email?: string;
+    password?: string;
 }
 
 // --- UBICACIONES (Zonas del Mapa) ---

@@ -35,10 +35,17 @@ export const getUserNotificationHistoryService = async (userId: string): Promise
     return data;
 };
 
-// --- USUARIOS (USERS) ---
+// --- USUARIOS ---
 
-// Para actualizar las preferencias de voz o vibración 
-export const updateUserService = async (userId: string, userData: { name?: string }): Promise<any> => {
-    const { data } = await api.patch(`/users/${userId}`, userData);
+// Para actualizar 
+export const updateUserService = async (
+    userId: string,
+    userData: {
+        name?: string;
+        email?: string;
+        password?: string;
+    }
+): Promise<any> => {
+    const { data } = await api.put(`/users/${userId}`, userData);
     return data;
 };

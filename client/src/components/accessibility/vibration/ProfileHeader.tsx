@@ -6,7 +6,7 @@ export const ProfileHeader = ({ title }: { title: string }) => {
     return (
         <header className="px-8 pt-8 py-6 flex items-center gap-4">
             <button 
-                onClick={() => navigate('/accessibility/dashboard')} 
+                onClick={() => navigate('/accessibility/profile')} 
                 className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform"
             >
                 <ArrowLeft size={22} className="text-gray-800" />
