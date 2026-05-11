@@ -1,5 +1,5 @@
-import { MapPin, Info, AlertTriangle, FileText, Clock, Calendar} from "lucide-react";
-import { ReportStatus, Problem, DangerLevel} from "../../../types/student.types";
+import { MapPin, PenLine, AlertTriangle, FileText, Clock, Calendar } from "lucide-react";
+import { ReportStatus, Problem, DangerLevel } from "../../../types/student.types";
 
 import type { ReportDTO } from "../../../types/student.types";
 
@@ -30,14 +30,14 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
     };
 
     return (
-        <div className="bg-white rounded-[28px] px-5 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)] mx-4 mb-5">
+        <div className="bg-white rounded-2xl px-5 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)] mx-4 mb-5">
 
             <div className="flex flex-col gap-5">
 
                 {/* UBICACION */}
                 <div className="flex items-start gap-3">
 
-                    <div className="w-11 h-11 rounded-[50px] bg-[#EEF4FF] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-[50px] bg-[#EEF4FF] flex items-center justify-center shrink-0">
                         <MapPin size={18} className="text-[#296BFF]" />
                     </div>
 
@@ -55,8 +55,8 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                 {/* TIPO PROBLEMA */}
                 <div className="flex items-start gap-3">
 
-                    <div className="w-11 h-11 rounded-[50px] bg-[#F6EEFF] flex items-center justify-center shrink-0">
-                        <Info size={18} className="text-[#C026FF]" />
+                    <div className="w-8 h-8 rounded-[50px] bg-[#F6EEFF] flex items-center justify-center shrink-0">
+                        <PenLine size={18} className="text-[#C026FF]" />
                     </div>
 
                     <div className="flex flex-col gap-0.5">
@@ -73,7 +73,7 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                 {/* NIVEL RIESGO */}
                 <div className="flex items-start gap-3">
 
-                    <div className="w-11 h-11 rounded-[50px] bg-[#FFF4E8] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-[50px] bg-[#FFF4E8] flex items-center justify-center shrink-0">
                         <AlertTriangle size={18} className="text-[#FF6B00]" />
                     </div>
 
@@ -91,7 +91,7 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                 {/* DESCRIPCION */}
                 <div className="flex items-start gap-3">
 
-                    <div className="w-11 h-11 rounded-[50px] bg-[#F3F4F6] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-[50px] bg-[#F3F4F6] flex items-center justify-center shrink-0">
                         <FileText size={18} className="text-[#9CA3AF]" />
                     </div>
 

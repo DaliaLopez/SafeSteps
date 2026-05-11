@@ -5,7 +5,7 @@ import {
   deleteLocationService,
   type Location,
   type CreateLocationPayload,
-} from '../services/locationsService'
+} from '../services/locations.service'
 import { useRealtimeLocations } from './useRealtimeLocations'
 
 export interface LatLng {

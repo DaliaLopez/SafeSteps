@@ -30,6 +30,8 @@ import AccessibilityAlertPage from './features/accessibility/AlertPage'
 import AccessibilityNavegationSettings from './features/accessibility/NavegationSettings'
 import AccessibilityAudioSettings from './features/accessibility/AudioSettings'
 import AccessibilityVibrationSettings from './features/accessibility/VibrationSettings'
+import AddZonePage from './features/admin/AddZonePage'
+import DeleteZonePage from './features/admin/DeleteZonePage'
 
 const App = () => {
   const { token, user } = useAuth()
@@ -46,6 +48,8 @@ const App = () => {
 
       <Route path="/admin/dashboard"    element={isAdmin ? <DashboardPage />       : <Navigate to="/login" />} />
 
+      <Route path="/admin/add-zone"     element={isAdmin ? <AddZonePage />         : <Navigate to="/login" />} />
+      <Route path="/admin/delete-zone"  element={isAdmin ? <DeleteZonePage />         : <Navigate to="/login" />} />
       <Route path="/admin/reports"      element={isAdmin ? <PendingReportsPage />  : <Navigate to="/login" />} />
       <Route path="/admin/alerts"       element={isAdmin ? <AlertsPage />          : <Navigate to="/login" />} />
       <Route path="/admin/activity"     element={isAdmin ? <ActivityHistoryPage /> : <Navigate to="/login" />} />
