@@ -7,7 +7,6 @@ export interface Notification {
     notified: boolean;
 }
 
-// DTO crear noti
 export interface CreateNotificationDTO {
     user_id: string;
     alert_id: string;

@@ -7,9 +7,14 @@ import type {
 
 // Obtener todos los reportes (debug/admin)
 export const getReportsService = async () => {
-    const result = await pool.query(`SELECT * FROM reports`);
-    return result.rows;
-};
+    const result = await pool.query(`
+        SELECT *,
+            ST_Y(location::geometry) as latitude,
+            ST_X(location::geometry) as longitude
+        FROM reports
+    `)
+    return result.rows
+}
 
 // Obtener un reporte específico
 export const getReportByIdService = async (id: string) => {
@@ -29,15 +34,17 @@ export const getReportByIdService = async (id: string) => {
 // Aquí es donde el admin decide aprobar o rechazar
 export const getPendingReportsService = async () => {
     const result = await pool.query(`
-        SELECT r.*, u.name as reporter_name 
+        SELECT r.*,
+            ST_Y(r.location::geometry) as latitude,
+            ST_X(r.location::geometry) as longitude,
+            u.name as reporter_name 
         FROM reports r
         JOIN users u ON r.user_id = u.id
         WHERE r.status = 'Pendiente'
         ORDER BY r.created_at ASC
-    `);
-
-    return result.rows;
-};
+    `)
+    return result.rows
+}
 
 // Crear reporte (lo hace el usuario)
 // Ej: "hay una escalera dañada aquí"
@@ -45,16 +52,36 @@ export const getPendingReportsService = async () => {
 export const createReportService = async (report: CreateReportDTO) => {
     try {
         const result = await pool.query(
-            `INSERT INTO reports(user_id, description, problem_type, danger_level, location) 
-            VALUES ($1, $2, $3, $4, ST_SetSRID(ST_MakePoint($5, $6), 4326)::geography) 
+            `INSERT INTO reports(
+                user_id, 
+                description, 
+                problem_type, 
+                danger_level, 
+                location, 
+                location_name
+            ) 
+            VALUES (
+                $1, $2, $3, $4, 
+                ST_SetSRID(ST_MakePoint($5, $6), 4326)::geography, 
+                COALESCE(
+                    (
+                        SELECT name FROM locations 
+                        WHERE ST_Intersects(boundary, ST_SetSRID(ST_MakePoint($5, $6), 4326)::geography)
+                        LIMIT 1
+                    ),
+                    $7, -- Si no hay intersección, usa lo que el usuario escribió
+                    'Ubicación externa' -- Si el usuario no escribió nada, usa este genérico
+                )
+            ) 
             RETURNING *`,
             [
                 report.user_id,
                 report.description,
                 report.problem_type,
                 report.danger_level,
-                report.longitude,
-                report.latitude,
+                report.longitude,    // $5
+                report.latitude,     // $6
+                report.location_name // $7
             ]
         );
 
@@ -125,4 +152,33 @@ export const resolveReportService = async (reportId: string) => {
         console.error(error);
         throw Boom.badRequest('Error resolving report');
     }
+};
+
+export const getReportsByUserService = async (userId: string) => {
+    const result = await pool.query(
+        `SELECT * FROM reports WHERE user_id = $1 ORDER BY created_at DESC`,
+        [userId]
+    );
+    return result.rows;
+};
+
+// reports.service.ts
+export const getUserReportStatsService = async (userId: string) => {
+    const result = await pool.query(
+        `SELECT 
+            COUNT(*) FILTER (WHERE status = 'Aprobado') as aprobados,
+            COUNT(*) FILTER (WHERE status = 'Pendiente') as pendientes,
+            COUNT(*) FILTER (WHERE status = 'Rechazado') as rechazados
+        FROM reports 
+        WHERE user_id = $1`,
+        [userId]
+    );
+
+    // Convertimos los strings que devuelve Postgres a números
+    const stats = result.rows[0];
+    return {
+        aprobados: parseInt(stats.aprobados),
+        pendientes: parseInt(stats.pendientes),
+        rechazados: parseInt(stats.rechazados)
+    };
 };

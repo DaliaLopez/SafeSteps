@@ -31,24 +31,18 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-6">
-      {/* Contenedor con ancho máximo de 400px para que no se vea gigante en web */}
-      <div className="w-full max-w-[400px] bg-white rounded-[24px] shadow-sm p-6 md:p-10 flex flex-col items-center border border-gray-100">
-        {/* Icono y encabezado compactos */}
+    <div className="bg-white min-h-screen flex items-center justify-center px-4 py-6">
+      <div className="w-full max-w-100 p-6 md:p-10 flex flex-col items-center">
         <div className="flex flex-col items-center mb-6 text-center">
-          <div className="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center">
           <img
             src={logo}
             alt="SafeSteps"
-            className="w-10 h-10 object-contain"
+            className="w-30 h-30 object-contain"
           />
-        </div>
-          <h1 className="font-bold" style={{ color: '#2563eb' }}>
-          Bienvenido
-        </h1>
-          <p className="text-sm text-gray-400 pb-">
-          Inicia sesion para continuar
-        </p>
+        
+          <h2 className="font-bold" style={{ color: '#2563eb' }}>
+          Iniciar sesión
+        </h2>
         </div>
 
         {error && (
@@ -59,7 +53,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           <div className="flex flex-col gap-1">
-            <label className="block text-[11px] font-semibold text-gray-500 ml-1 uppercase tracking-wider text-left w-full">
+            <label className="text-[14px] font-semibold text-gray-500 ml-1 text-left w-full">
               Email
             </label>
             <input
@@ -72,7 +66,7 @@ const LoginPage = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="block text-[11px] font-semibold text-gray-500 ml-1 uppercase tracking-wider text-left w-full">
+            <label className="text-[14px] font-semibold text-gray-500 ml-1 text-left w-full">
               {" "}
               Contraseña
             </label>

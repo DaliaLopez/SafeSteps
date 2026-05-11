@@ -5,7 +5,6 @@ import type { AuthenticateUserDTO, CreateUserDTO } from './auth.types';
 
 import { createUserDBService } from '../users/users.service';
 
-// Login
 export const authenticateUserService = async (
     credentials: AuthenticateUserDTO
 ) => {
@@ -33,7 +32,6 @@ export const authenticateUserService = async (
     };
 };
 
-// Registro
 export const createUserService = async (user: CreateUserDTO) => {
     const { data, error } = await supabase.auth.signUp({
         email: user.email,
@@ -58,9 +56,27 @@ export const createUserService = async (user: CreateUserDTO) => {
             role: user.role,
         });
 
+        await pool.query(
+            `
+                INSERT INTO accessibility_settings (user_id)
+                VALUES ($1)
+            `,
+            [authUser.id]
+        );
+
         return newUser;
     } catch (err) {
         console.error(err);
         throw Boom.internal('Database error');
     }
+};
+
+export const updateAuthService = async (userId: string, data: { email?: string, password?: string }) => {
+    const { data: user, error } = await supabase.auth.admin.updateUserById(userId, {
+        email: data.email,
+        password: data.password
+    });
+
+    if (error) throw Boom.badRequest(error.message);
+    return user;
 };

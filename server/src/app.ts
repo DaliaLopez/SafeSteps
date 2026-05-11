@@ -9,6 +9,7 @@ import { locationsRouter } from './features/locations/locations.router';
 import { reportsRouter } from './features/reports/reports.router';
 import { alertsRouter } from './features/alerts/alerts.router';
 import { notificationsRouter } from './features/notifications/notifications.router';
+import { accessibilitySettingsRouter } from './modules/accessibility-settings/accessibility-settings.router';
 import { authMiddleware } from './middlewares/authMiddleware';
 
 const app = express();
@@ -21,15 +22,16 @@ app.get('/', (_req, res) => {
   res.send('SafeSteps API is running!');
 });
 
-// Registro de Rutas 
 app.use('/api/auth', authRouter);     
 app.use('/api/users', usersRouter); 
 app.use('/api/locations', locationsRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/alerts', alertsRouter);
+
+app.use('/api/accessibility-settings', authMiddleware, accessibilitySettingsRouter); //NUEVO DE SETTINGS
+
 app.use('/api/notifications', authMiddleware, notificationsRouter);
 
-// El middleware de errores 
 app.use(errorsMiddleware);
 
 if (NODE_ENV !== 'production') {

@@ -1,24 +1,79 @@
 @import "tailwindcss";
 
-#root, .App {
-  width: 100% !important;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  border: none !important;
+.counter {
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+
+  &:hover {
+    background: var(--accent);
+    color: white;
+  }
 }
 
-#center, #next-steps, #docs, #spacer {
-  display: block;
-  border: none !important;
-  padding: 0;
-  margin: 0;
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  flex-grow: 1;
+  max-width: 600px;
+  margin: 0 auto;
   width: 100%;
 }
 
-h1 {
-  all: unset;
-  display: block;
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+#next-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 24px;
+  
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.button-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--text-h);
+  font-weight: 600;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+  }
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+  margin: 10px 0;
 }

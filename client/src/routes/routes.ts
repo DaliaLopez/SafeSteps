@@ -1,4 +1,4 @@
-import type { UserRole } from '../types/authType'
+import type { UserRole } from '../types/auth.types'
 
 export const DEFAULT_POST_LOGIN_REDIRECT = '/admin/dashboard'
 

@@ -8,6 +8,8 @@ import {
     updateReportStatusService,
     promoteReportToAlertService,
     resolveReportService,
+    getReportsByUserService,
+    getUserReportStatsService,
 } from './reports.service';
 
 import {
@@ -76,26 +78,8 @@ export const createReportController = async (
             danger_level,
             latitude,
             longitude,
+            location_name, // Extraer del body enviado por el frontend
         } = req.body;
-
-        if (
-            !user_id ||
-            !description ||
-            !problem_type ||
-            !danger_level ||
-            latitude === undefined ||
-            longitude === undefined
-        ) {
-            throw Boom.badRequest('Missing fields');
-        }
-
-        if (!Object.values(ProblemType).includes(problem_type)) {
-            throw Boom.badRequest('Invalid problem type');
-        }
-
-        if (!Object.values(DangerLevel).includes(danger_level)) {
-            throw Boom.badRequest('Invalid danger level');
-        }
 
         const report = await createReportService({
             user_id,
@@ -104,6 +88,7 @@ export const createReportController = async (
             danger_level,
             latitude,
             longitude,
+            location_name, // Se pasa al servicio
         });
 
         res.status(201).json(report);
@@ -156,6 +141,39 @@ export const resolveReportController = async (
         const result = await resolveReportService(id as string);
 
         res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getReportsByUserController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) throw Boom.badRequest('User ID is required');
+
+        const reports = await getReportsByUserService(userId as string);
+        res.json(reports);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// reports.controller.ts
+export const getUserReportStatsController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) throw Boom.badRequest('User ID is required');
+
+        const stats = await getUserReportStatsService(userId as string);
+        res.json(stats);
     } catch (error) {
         next(error);
     }

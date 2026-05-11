@@ -62,10 +62,19 @@ export const checkIfUserIsInsideService = async (
 
 // Eliminar zona (solo admin)
 export const deleteLocationService = async (id: string) => {
-    const result = await pool.query(
+
+    try {
+     const result = await pool.query(
         `DELETE FROM locations WHERE id = $1 RETURNING *`,
         [id]
     );
 
     return result.rows[0];
+
+    }catch(error:any){
+        console.log(error)
+
+    }
+
+    
 };

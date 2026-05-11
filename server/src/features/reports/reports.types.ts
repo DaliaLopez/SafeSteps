@@ -30,7 +30,6 @@ export interface Report {
     created_at: string;
 }
 
-// DTO crear
 export interface CreateReportDTO {
     user_id: string;
     description: string;
@@ -38,9 +37,9 @@ export interface CreateReportDTO {
     danger_level: DangerLevel;
     latitude: number;
     longitude: number;
+    location_name?: string;
 }
 
-// DTO update status
 export interface UpdateReportStatusDTO {
     id: string;
     status: ReportStatus;

@@ -1,18 +1,13 @@
 import { createContext, useContext, useState } from 'react'
-import { loginService, logoutService } from '../services/authService'
-
-interface AuthUser {
-  id: string
-  name: string
-  email: string
-  role: string
-}
+import { loginService, logoutService } from '../services/auth.service'
+import type { AuthUser } from '../types/auth.types'
 
 interface AuthContextType {
   user: AuthUser | null
   token: string | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
+  updateUserContext: (newUser: AuthUser) => void 
 }
 
 const AuthContext = createContext<AuthContextType>(null!)
@@ -32,15 +27,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem('user', JSON.stringify(data.user))
   }
 
+  const updateUserContext = (newUser: AuthUser) => {
+    setUser(newUser)
+    localStorage.setItem('user', JSON.stringify(newUser))
+  }
+
   const logout = () => {
     logoutService()
     setToken(null)
     setUser(null)
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUserContext }}>
       {children}
     </AuthContext.Provider>
   )

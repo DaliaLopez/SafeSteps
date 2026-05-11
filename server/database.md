@@ -58,7 +58,81 @@ RETURNING *;
 ```sql
 DELETE FROM users WHERE id = $1 RETURNING *;
 ```
+# Accessibility Settings
 
+```sql
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE accessibility_settings (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+
+    -- AUDIO
+    volume INTEGER DEFAULT 50,
+    voice_speed TEXT DEFAULT 'Normal',
+    auto_repeat BOOLEAN DEFAULT true,
+
+    -- VIBRACIÓN
+    vibration_active BOOLEAN DEFAULT true,
+    vibration_intensity TEXT DEFAULT 'Media',
+
+    -- NAVEGACIÓN
+    alert_distance TEXT DEFAULT '5 metros',
+    alert_type TEXT DEFAULT 'Solo riesgo',
+
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Accessibility Settings SQL Queries
+
+### getAccessibilitySettings
+
+```sql
+SELECT * 
+FROM accessibility_settings
+WHERE user_id = $1;
+```
+
+### createAccessibilitySettings
+
+```sql
+INSERT INTO accessibility_settings (user_id)
+VALUES ($1)
+RETURNING *;
+```
+
+### updateAccessibilitySettings
+
+```sql
+UPDATE accessibility_settings
+SET
+    volume = COALESCE($2, volume),
+    voice_speed = COALESCE($3, voice_speed),
+    auto_repeat = COALESCE($4, auto_repeat),
+
+    vibration_active = COALESCE($5, vibration_active),
+    vibration_intensity = COALESCE($6, vibration_intensity),
+
+    alert_distance = COALESCE($7, alert_distance),
+    alert_type = COALESCE($8, alert_type),
+
+    updated_at = CURRENT_TIMESTAMP
+
+WHERE user_id = $1
+
+RETURNING *;
+```
+
+### deleteAccessibilitySettings
+
+```sql
+DELETE FROM accessibility_settings
+WHERE user_id = $1
+RETURNING *;
+```
 
 # Locations
 

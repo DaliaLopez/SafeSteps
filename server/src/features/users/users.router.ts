@@ -10,5 +10,7 @@ export const usersRouter = Router();
 
 usersRouter.get('/', getUsersController);
 usersRouter.get('/:id', getUserByIdController);
-usersRouter.put('/', updateUserController);
+
+usersRouter.put('/:id', updateUserController); 
+
 usersRouter.delete('/:id', deleteUserController);
