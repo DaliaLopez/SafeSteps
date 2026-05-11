@@ -58,6 +58,14 @@ export const createUserService = async (user: CreateUserDTO) => {
             role: user.role,
         });
 
+        await pool.query(
+            `
+                INSERT INTO accessibility_settings (user_id)
+                VALUES ($1)
+            `,
+            [authUser.id]
+        );
+
         return newUser;
     } catch (err) {
         console.error(err);
