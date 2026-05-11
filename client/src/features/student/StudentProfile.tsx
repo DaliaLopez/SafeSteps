@@ -26,7 +26,7 @@ export default function StudentProfile() {
                 <UserCard name={user?.name} email={user?.email} role={user?.role} />
 
                 <section>
-                    <h3 className="text-[14px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-2 italic">Estadísticas</h3>
+                    <h3 className="mb-4 ml-2">Estadísticas</h3>
                     <div className="grid grid-cols-3 gap-4">
                         <StatCard label="Reportes aprobados" value={stats.aprobados} icon={CheckCircle} color="bg-[#22C55E]" shadow="shadow-green-100" />
                         <StatCard label="Reportes pendientes" value={stats.pendientes} icon={Clock} color="bg-[#296BFF]" shadow="shadow-blue-100" />
@@ -35,7 +35,7 @@ export default function StudentProfile() {
                 </section>
 
                 <section className="space-y-4">
-                    <h3 className="text-[14px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-2 italic">Configuración</h3>
+                    <h3 className="mb-4 ml-2">Configuración</h3>
                     
                     <MenuOption 
                         label="Ver mis reportes" 

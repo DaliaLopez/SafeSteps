@@ -34,7 +34,6 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen">
-      {/* Header Estilizado */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button onClick={() => navigate('/student/dashboard')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
           <ArrowLeft size={22} className="text-gray-800" />

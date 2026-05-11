@@ -5,7 +5,6 @@ import type { AuthenticateUserDTO, CreateUserDTO } from './auth.types';
 
 import { createUserDBService } from '../users/users.service';
 
-// Login
 export const authenticateUserService = async (
     credentials: AuthenticateUserDTO
 ) => {
@@ -33,7 +32,6 @@ export const authenticateUserService = async (
     };
 };
 
-// Registro
 export const createUserService = async (user: CreateUserDTO) => {
     const { data, error } = await supabase.auth.signUp({
         email: user.email,

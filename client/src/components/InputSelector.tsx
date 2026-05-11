@@ -25,7 +25,6 @@ export const ZoneFormFields = ({
 }: ZoneFormFieldsProps) => {
   return (
     <>
-      {/* Tipo */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
         <h2 className="text-base font-semibold text-gray-800 mb-3">Tipo</h2>
         <div className="flex flex-col gap-2">
@@ -52,7 +51,6 @@ export const ZoneFormFields = ({
         </div>
       </div>
 
-      {/* Descripción */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
         <h2 className="text-base font-semibold text-gray-800 mb-3">Descripción</h2>
         <textarea

@@ -57,7 +57,6 @@ export const DrawingOverlay = ({ onSave, onCancel }: DrawingOverlayProps) => {
         />
       )}
 
-      {/* Barra de controles flotante */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000]">
         <div className="bg-white rounded-2xl px-5 py-3 flex items-center gap-3 shadow-lg border border-gray-200">
           <span className="text-sm text-gray-500">

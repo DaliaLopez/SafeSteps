@@ -22,7 +22,6 @@ app.get('/', (_req, res) => {
   res.send('SafeSteps API is running!');
 });
 
-// Registro de Rutas 
 app.use('/api/auth', authRouter);     
 app.use('/api/users', usersRouter); 
 app.use('/api/locations', locationsRouter);
@@ -33,7 +32,6 @@ app.use('/api/accessibility-settings', authMiddleware, accessibilitySettingsRout
 
 app.use('/api/notifications', authMiddleware, notificationsRouter);
 
-// El middleware de errores 
 app.use(errorsMiddleware);
 
 if (NODE_ENV !== 'production') {

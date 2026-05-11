@@ -5,7 +5,6 @@ import type {
     UpdateAccessibilitySettingsDTO
 } from '../types/accessibility-settings.types';
 
-// Obtener settings
 export const getAccessibilitySettingsService = async (
     userId: string
 ): Promise<AccessibilitySettings> => {
@@ -17,7 +16,6 @@ export const getAccessibilitySettingsService = async (
     return data;
 };
 
-// Actualizar settings
 export const updateAccessibilitySettingsService = async (
     userId: string,
     settings: UpdateAccessibilitySettingsDTO

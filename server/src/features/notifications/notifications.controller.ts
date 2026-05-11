@@ -21,7 +21,7 @@ export const createNotificationController = async (
         }
 
         const notification = await createNotificationService({
-            user_id: userid, // 🔥 CAMBIO
+            user_id: userid,
             alert_id,
         });
 

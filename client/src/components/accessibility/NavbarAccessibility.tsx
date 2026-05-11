@@ -8,13 +8,11 @@ interface NavbarProps {
 export default function NavbarAccessibility({ onRepeat }: NavbarProps) {
     const navigate = useNavigate();
 
-    // Función para hablar y ejecutar una acción al terminar
     const speakAndThen = (text: string, callback: () => void) => {
-        window.speechSynthesis.cancel(); // Detiene cualquier voz previa
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
 
-        // Evento que detecta cuando la voz termina de hablar
         utterance.onend = () => {
             callback();
         };
@@ -26,7 +24,6 @@ export default function NavbarAccessibility({ onRepeat }: NavbarProps) {
         <nav className="fixed bottom-0 bg-white p-6 rounded-t-[40px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)] w-full mt-auto z-50">
             <div className="flex flex-col gap-2 max-w-full justify-center">
 
-                {/* BOTÓN INICIAR NAVEGACIÓN */}
                 <button
                     onClick={() => speakAndThen(
                         "Botón presionado: Iniciar navegación. Redirigiendo a la pantalla de mapa.",
@@ -37,7 +34,6 @@ export default function NavbarAccessibility({ onRepeat }: NavbarProps) {
                     Iniciar navegación
                 </button>
 
-                {/* BOTÓN REPETIR INFORMACIÓN */}
                 <button
                     onClick={(e) => {
                         e.preventDefault();
@@ -52,7 +48,6 @@ export default function NavbarAccessibility({ onRepeat }: NavbarProps) {
                     <span className="font-bold text-sm">Repetir información</span>
                 </button>
 
-                {/* BOTÓN VER PERFIL */}
                 <button
                     onClick={() => speakAndThen(
                         "Botón presionado: Ver perfil. Redirigiendo a tus ajustes de cuenta.",

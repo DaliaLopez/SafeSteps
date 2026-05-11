@@ -38,7 +38,6 @@ export default function NavbarAdmin() {
           </div>
         </NavLink>
 
-        {/* ACOMODAR ESTE, NO VA NAVLINK PQ TIENE QUE BORRAR ALGO, ASI QUE TOCA AJUSTARLO CON EL BACKEND*/}
         <NavLink
           to="/admin/delete-zone"
           className="flex md:flex-col items-center justify-center gap-2 md:gap-1 p-3 rounded-3xl transition-all bg-blue-600 text-white hover:bg-blue-700"

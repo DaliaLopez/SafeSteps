@@ -17,15 +17,12 @@ export default function AudioSettings() {
   const [speed, setSpeed] = useState('Normal');
   const [autoRepeat, setAutoRepeat] = useState(true);
 
-  // --- FUNCIÓN PARA LEER TEXTO ---
   const speak = (text: string) => {
-    // Cancelar cualquier lectura previa para que no se amontonen
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'es-ES'; // Idioma español
+    utterance.lang = 'es-ES';
 
-    // Mapeamos tu estado de "speed" a valores numéricos que entiende el navegador
     const rates: Record<string, number> = { 'Lenta': 0.6, 'Normal': 1, 'Rápida': 1.5 };
     utterance.rate = rates[speed] || 1;
     utterance.volume = volume / 100;
@@ -33,8 +30,6 @@ export default function AudioSettings() {
     window.speechSynthesis.speak(utterance);
   };
 
-  // --- EFECTOS PARA REACCIONAR A CAMBIOS ---
-  // Cuando el usuario cambie la velocidad o el auto-repeat, la app le avisará por voz
   useEffect(() => {
 
     const loadSettings = async () => {
@@ -98,7 +93,6 @@ export default function AudioSettings() {
         <h3 className="ml-2">Configuración de audio</h3>
 
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 space-y-5">
-          {/* Al terminar de mover el slider de volumen, lee el porcentaje */}
           <div
             onMouseUp={async () => { speak(`Volumen al ${volume} por ciento`);
               if (user?.id) {

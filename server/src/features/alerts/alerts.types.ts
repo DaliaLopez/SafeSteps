@@ -6,7 +6,6 @@ export interface Alert {
     created_at: string;
 }
 
-// DTO crear alerta manual (admin)
 export interface CreateAlertDTO {
     location_id: string;
     message: string;

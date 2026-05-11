@@ -8,13 +8,11 @@ interface Props {
 export default function NavbarNavegation({ onRepeat }: Props) {
     const navigate = useNavigate();
 
-    // --- FUNCIÓN PARA ESPERAR A QUE TERMINE LA VOZ ---
     const speakAndThen = (text: string, callback: () => void) => {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
 
-        // Esta es la clave: el callback solo se ejecuta cuando la voz termina
         utterance.onend = () => {
             callback();
         };
@@ -26,7 +24,6 @@ export default function NavbarNavegation({ onRepeat }: Props) {
         <nav className="fixed bottom-0 bg-white p-6 rounded-t-[40px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)] w-full z-50">
             <div className="flex flex-col gap-2 max-w-full justify-center">
 
-                {/* BOTÓN DETENER: Ahora es un button, no un NavLink directo */}
                 <button
                     onClick={() => speakAndThen(
                         "Botón presionado: Deteniendo navegación. Volviendo al panel principal.", 
@@ -37,7 +34,6 @@ export default function NavbarNavegation({ onRepeat }: Props) {
                     Detener navegación
                 </button>
 
-                {/* BOTÓN REPETIR */}
                 <button
                     onClick={() => speakAndThen(
                         "Botón presionado: Repitiendo información de navegación.", 

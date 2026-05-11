@@ -34,7 +34,6 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
 
             <div className="flex flex-col gap-5">
 
-                {/* UBICACION */}
                 <div className="flex items-start gap-3">
 
                     <div className="w-8 h-8 rounded-[50px] bg-[#EEF4FF] flex items-center justify-center shrink-0">
@@ -52,7 +51,6 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                     </div>
                 </div>
 
-                {/* TIPO PROBLEMA */}
                 <div className="flex items-start gap-3">
 
                     <div className="w-8 h-8 rounded-[50px] bg-[#F6EEFF] flex items-center justify-center shrink-0">
@@ -70,7 +68,6 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                     </div>
                 </div>
 
-                {/* NIVEL RIESGO */}
                 <div className="flex items-start gap-3">
 
                     <div className="w-8 h-8 rounded-[50px] bg-[#FFF4E8] flex items-center justify-center shrink-0">
@@ -88,7 +85,6 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                     </div>
                 </div>
 
-                {/* DESCRIPCION */}
                 <div className="flex items-start gap-3">
 
                     <div className="w-8 h-8 rounded-[50px] bg-[#F3F4F6] flex items-center justify-center shrink-0">
@@ -107,10 +103,8 @@ export const ReportCard = ({ report }: { report: ReportDTO }) => {
                 </div>
             </div>
 
-            {/* LINEA */}
             <div className="w-full h-px bg-[#ECECEC] my-5" />
 
-            {/* FOOTER */}
             <div className="flex items-center justify-between gap-2">
 
                 <div

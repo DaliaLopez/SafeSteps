@@ -22,7 +22,6 @@ export default function NavbarAlert({ onRepeat }: Props) {
         <nav className="fixed bottom-0 bg-white p-6 rounded-t-[40px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)] w-full z-50">
             <div className="flex flex-col gap-2 max-w-full justify-center">
                 
-                {/* BOTÓN REPETIR */}
                 <button
                     onClick={() => {
                         onRepeat?.();
@@ -33,7 +32,6 @@ export default function NavbarAlert({ onRepeat }: Props) {
                     <span className="font-bold text-sm">Repetir información</span>
                 </button>
 
-                {/* BOTÓN CONTINUAR */}
                 <button
                     onClick={() => speakAndThen(
                         "Botón presionado: continuar. Volviendo a la página de navegación.",

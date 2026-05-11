@@ -56,7 +56,6 @@ const navigate = useNavigate();
   return (
     
     <div className="min-h-screen bg-[#F4F7FB] px-4 py-6 pb-32">
-      {/* Header */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate('/admin/dashboard')}

@@ -30,7 +30,6 @@ export interface Report {
     created_at: string;
 }
 
-// DTO crear
 export interface CreateReportDTO {
     user_id: string;
     description: string;
@@ -41,7 +40,6 @@ export interface CreateReportDTO {
     location_name?: string;
 }
 
-// DTO update status
 export interface UpdateReportStatusDTO {
     id: string;
     status: ReportStatus;

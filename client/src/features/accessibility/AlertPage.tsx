@@ -18,11 +18,9 @@ export default function AlertPage() {
     const fetchAlerts = async () => {
       setLoading(true);
       try {
-        // LÓGICA REAL: Obtenemos las alertas del servicio
         const data = await getAlertsForAccessibilityService();
         setAlerts(data);
 
-        // Si hay una alerta (la más cercana), la anunciamos inmediatamente
         if (data && data.length > 0) {
           const main = data[0];
           const distance = main.distance || "pocos metros";

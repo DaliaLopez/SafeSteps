@@ -1,5 +1,3 @@
-// ZoneCard.tsx
-
 import {
   Trash2,
   MapPin,
@@ -33,7 +31,6 @@ export default function LocationCard({
 
       <div className="flex flex-col gap-5">
 
-        {/* NOMBRE */}
         <div className="flex items-start gap-3">
 
           <div className="w-8 h-8 rounded-full bg-[#EEF4FF] flex items-center justify-center shrink-0">
@@ -51,7 +48,6 @@ export default function LocationCard({
           </div>
         </div>
 
-        {/* TIPO */}
         <div className="flex items-start gap-3">
 
           <div className="w-8 h-8 rounded-full bg-[#F6EEFF] flex items-center justify-center shrink-0">
@@ -69,7 +65,6 @@ export default function LocationCard({
           </div>
         </div>
 
-        {/* DESCRIPCIÓN */}
         <div className="flex items-start gap-3">
 
           <div className="w-8 h-8 rounded-full bg-[#F3F4F6] flex items-center justify-center shrink-0">
@@ -88,10 +83,8 @@ export default function LocationCard({
         </div>
       </div>
 
-      {/* LINEA */}
       <div className="w-full h-px bg-[#ECECEC] my-5" />
 
-      {/* BOTÓN */}
       <button
         onClick={() => onDelete(location.id)}
         className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 transition-all text-white font-semibold py-3 rounded-2xl"

@@ -7,7 +7,6 @@ export default function LandingPage() {
 
       <div className="w-full max-w-sm text-center">
 
-        {/* Logo + título */}
         <div className="mb-10">
           <img src={logo} alt="SafeSteps" className="w-32 mx-auto mb-4" />
 
@@ -16,7 +15,6 @@ export default function LandingPage() {
           </h1>
         </div>
 
-        {/* Botones */}
         <div className="flex flex-col gap-4">
 
           <Link

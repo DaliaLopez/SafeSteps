@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { MapView } from '../../components/map/MapView'
 import { ReportMarkers } from '../../components/student/report/ReportMarkers'
 import NavbarAdmin from '../../components/admin/NavbarAdmin'
-import Header from '../../components/student/dashboard/Header'
+import Header from '../../components/Header'
 import { getApprovedReportsService } from '../../services/admin.service'
 import type { ReportDTO } from '../../types/admin.types'
 

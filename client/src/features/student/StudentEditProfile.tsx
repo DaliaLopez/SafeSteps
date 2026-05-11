@@ -70,7 +70,6 @@ export default function StudentEditProfile() {
         </div>
 
         <div className="space-y-2">
-          {/* Campo Nombre */}
           <div className="relative focus-within:border-[#296BFF] transition-colors gap-4">
             <label className="text-[#364153] font-semibold text-[15px]">Nombre completo</label>
             <input
@@ -82,7 +81,6 @@ export default function StudentEditProfile() {
             />
           </div>
 
-          {/* Campo Email */}
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
             <label className="text-[#364153] font-semibold text-[15px]">Email</label>
             <input
@@ -94,7 +92,6 @@ export default function StudentEditProfile() {
             />
           </div>
 
-          {/* Campo Password */}
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
             <label className="text-[#364153] font-semibold text-[15px]">Nueva contraseña</label>
             <div className="flex items-center w-full p-3 bg-white rounded-2xl text-xs border-none focus:ring-1 focus:ring-blue-500 outline-none">

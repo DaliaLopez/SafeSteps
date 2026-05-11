@@ -62,7 +62,6 @@ export default function AddZonePage() {
 
       alert("Zona creada con éxito");
 
-      // limpiar formulario
       setZoneName("");
       setDescription("");
       setSelectedType(null);
@@ -78,7 +77,6 @@ export default function AddZonePage() {
   return (
     <div className="min-h-screen bg-[#F4F7FB] pb-32">
 
-      {/* HEADER */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate("/admin/dashboard")}
@@ -94,7 +92,6 @@ export default function AddZonePage() {
 
       <div className="max-w-6xl mx-auto px-4 flex flex-col gap-5">
 
-        {/* MAPA */}
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           
           <div className="mb-4">
@@ -127,7 +124,6 @@ export default function AddZonePage() {
           </div>
         </div>
 
-        {/* NOMBRE */}
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           
           <h3 className="mb-3 font-medium text-gray-700">
@@ -143,19 +139,16 @@ export default function AddZonePage() {
           />
         </div>
 
-        {/* SELECTOR */}
         <LocationTypeSelector
           selectedType={selectedType}
           onSelect={setSelectedType}
         />
 
-        {/* DESCRIPCIÓN */}
         <DescriptionInput
           value={description}
           onChange={setDescription}
         />
 
-        {/* BOTÓN */}
         <button
           onClick={handleSaveZone}
           disabled={isSaving}

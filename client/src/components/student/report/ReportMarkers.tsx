@@ -18,7 +18,6 @@ const PROBLEM_LABELS: Record<ProblemType, string> = {
   [ProblemType.BLOCKED_PATH]: 'Camino bloqueado',
 }
 
-// ── Iconos por danger_level ───────────────────────────────────────────────────
 
 const highIcon = new L.DivIcon({
   className: '',

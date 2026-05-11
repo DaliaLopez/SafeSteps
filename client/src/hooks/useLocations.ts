@@ -28,7 +28,6 @@ export const useLocations = () => {
     }
   }, [])
 
-  // Realtime stub — se actualiza cuando haya cambios en la tabla
   useRealtimeLocations(fetchLocations)
 
   useEffect(() => {
@@ -42,9 +41,8 @@ export const useLocations = () => {
     description?: string
   ): Promise<boolean> => {
     try {
-      // Convertir puntos a GeoJSON polygon
       const coordinates = [
-        [...points.map((p) => [p.lng, p.lat]), [points[0].lng, points[0].lat]], // cerrar el polígono
+        [...points.map((p) => [p.lng, p.lat]), [points[0].lng, points[0].lat]],
       ]
       const boundary = JSON.stringify({ type: 'Polygon', coordinates })
 

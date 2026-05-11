@@ -1,4 +1,3 @@
-// --- USUARIOS ---
 export interface User {
     id: string;
     name: string;
@@ -13,7 +12,6 @@ export interface UpdateUserDTO {
     password?: string;
 }
 
-// --- UBICACIONES (Zonas del Mapa) ---
 export enum LocationType {
     BUILDING = 'building',
     RAMP = 'ramp',
@@ -37,7 +35,6 @@ export interface CheckLocationDTO {
     longitude: number;
 }
 
-// --- ALERTAS (Problemas activos en una zona) ---
 export interface Alert {
     id: string;
     location_id: string;
@@ -49,7 +46,6 @@ export interface Alert {
     type?: LocationType;
 }
 
-// --- NOTIFICACIONES (Historial y alertas recibidas) ---
 export interface NotificationDTO {
     id: string;
     user_id: string;

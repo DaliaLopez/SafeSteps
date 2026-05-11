@@ -15,7 +15,6 @@ export default function HeaderNavegation() {
             </div>
 
             <div className="relative z-10 flex items-start gap-4">
-                {/* Icono de accesibilidad */}
                 {user?.role === 'accessibility' && (
                     <div className="mt-1">
                         <svg
@@ -32,7 +31,7 @@ export default function HeaderNavegation() {
 
                 <div className="flex flex-col items-start text-left gap-2">
                     <h2 className="text-2xl font-bold">
-                        Navegación Activa
+                        Navegación activa
                     </h2>
                     <p className="text-white text-xs font-normal opacity-80">
                         Recibiendo alertas en tiempo real.

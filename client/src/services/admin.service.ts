@@ -7,7 +7,6 @@ export interface UpdateReportStatusPayload {
   status: 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Resuelto'
 }
 
-// ── Reportes ──────────────────────────────────────────────────────────────────
 
 export const getApprovedReportsService = async (): Promise<ReportDTO[]> => {
   const { data } = await api.get<ReportDTO[]>('/reports')

@@ -9,7 +9,6 @@ import { MenuOption } from '../../components/accessibility/profile/MenuOption';
 export default function AccessibilityProfile() {
     const { user, logout } = useAuth();
 
-    // --- LÓGICA DE VOZ ---
     const speak = (text: string) => {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
@@ -17,7 +16,6 @@ export default function AccessibilityProfile() {
         window.speechSynthesis.speak(utterance);
     };
 
-    // Anunciar al entrar
     useEffect(() => {
         speak("Pantalla de Perfil. Desliza para navegar por las opciones. Editar perfil. Audio y accesibilidad. Vibracion. Opciones de navegacion. Cerrar sesion");
     }, []);
@@ -29,11 +27,9 @@ export default function AccessibilityProfile() {
 
     return (
         <div className="min-h-screen pb-10">
-            {/* Header */}
             <ProfileHeader title="Perfil" />
 
             <main className="max-w-md mx-auto px-6 space-y-8 pb-8">
-                {/* Tarjeta de usuario - Se añade tabIndex para que sea enfocable */}
                 <div 
                     tabIndex={0} 
                     onFocus={() => speak(`Usuario: ${user?.name || 'Laura'}. Correo: ${user?.email || 'laura@campus.u.edu'}`)}
@@ -46,7 +42,6 @@ export default function AccessibilityProfile() {
                     />
                 </div>
 
-                {/* Listado de opciones de configuración */}
                 <section className="space-y-4">
                     <div tabIndex={0} onFocus={() => speak("Configuración: Editar perfil")} className="outline-none">
                         <MenuOption
@@ -81,7 +76,6 @@ export default function AccessibilityProfile() {
                     </div>
                 </section>
 
-                {/* Botón de Salida */}
                 <button
                     onClick={handleLogout}
                     onFocus={() => speak("Botón: Cerrar sesión")}

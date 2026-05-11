@@ -1,13 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapView } from "../../components/map/MapView";
 import NavbarNavegation from "../../components/accessibility/NavbarNavegation";
 import HeaderNavegation from '../../components/accessibility/HeaderNavegation';
 import { useAuth } from '../../context/AuthContext';
 import { getAlertsForAccessibilityService } from '../../services/student.service';
+import type { ReportDTO } from '../../types/reports.types';
+import { getApprovedReportsService } from '../../services/admin.service';
+import { ReportMarkers } from '../../components/student/report/ReportMarkers';
 
 export default function NavegationDashboard() {
     const { user } = useAuth();
     const universityCenter: [number, number] = [3.341, -76.530];
+    const [reports, setReports] = useState<ReportDTO[]>([]);
+
+    useEffect(() => {
+        const loadReports = async () => {
+            try {
+                const data = await getApprovedReportsService();
+                setReports(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        loadReports();
+    }, []);
 
     const speak = (text: string, callback?: () => void) => {
         window.speechSynthesis.cancel();
@@ -21,16 +37,13 @@ export default function NavegationDashboard() {
         window.speechSynthesis.speak(utterance);
     };
 
-    // Función principal que construye el mensaje de voz basado en alertas reales
     const repeatNavegationInfo = async () => {
         try {
             let message = `Pantalla de navegación activa. `;
 
-            // Obtenemos las alertas vigentes del servicio
             const alerts = await getAlertsForAccessibilityService();
 
             if (alerts && alerts.length > 0) {
-                // Tomamos las descripciones de las primeras alertas para no saturar
                 const pointsDescription = alerts
                     .slice(0, 3)
                     .map(a => a.description || "Obstáculo no especificado")
@@ -49,7 +62,6 @@ export default function NavegationDashboard() {
         }
     };
 
-    // Al entrar a la pantalla por primera vez
     useEffect(() => {
         repeatNavegationInfo();
     }, [user]);
@@ -61,11 +73,12 @@ export default function NavegationDashboard() {
             </div>
 
             <main className="flex-1 relative z-10 -mt-16 outline-none" tabIndex={0} onFocus={() => speak("Mapa de navegación en tiempo real")}>
-                <MapView center={universityCenter} zoom={17} />
+                <MapView center={universityCenter} zoom={17}> 
+                    <ReportMarkers reports={reports} />
+                </MapView>
             </main>
 
             <div className="relative z-20">
-                {/* Pasamos la función para que el botón de la navbar la use */}
                 <NavbarNavegation onRepeat={repeatNavegationInfo} />
             </div>
         </div>

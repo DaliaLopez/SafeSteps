@@ -65,10 +65,8 @@ export default function Header() {
                 />
             </div>
 
-            {/* Contenedor principal con flex-row para alinear el icono a la izquierda de los textos */}
             <div className="relative z-10 flex items-start gap-4">
 
-                {/* Condicional para el icono de volumen (Accessibility Role) */}
                 {user?.role === 'accessibility' && (
                     <div className="mt-1">
                         <svg

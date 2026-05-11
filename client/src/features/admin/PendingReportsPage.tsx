@@ -27,7 +27,6 @@ export default function PendingReportsPage() {
     setUpdating(id)
     try {
       await updateReportStatusService({ id, status })
-      // Quitar el reporte de la lista una vez gestionado
       setReports((prev) => prev.filter((r) => r.id !== id))
     } catch (err) {
       console.error('Error actualizando reporte:', err)
@@ -39,7 +38,6 @@ export default function PendingReportsPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* Header */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate('/admin/dashboard')}
@@ -52,7 +50,6 @@ export default function PendingReportsPage() {
         </h2>
       </header>
  
-      {/* Content */}
       <div className="flex-1 py-4 overflow-y-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -69,7 +66,6 @@ export default function PendingReportsPage() {
             <div key={report.id} className="relative">
               <ReportCard report={report} />
 
-              {/* Botones aprobar / rechazar */}
               <div className="flex gap-3 px-4 -mt-2 mb-5">
                 <button
                   onClick={() => handleStatus(report.id, ReportStatus.APPROVED)}

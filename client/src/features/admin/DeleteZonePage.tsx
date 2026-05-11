@@ -54,7 +54,6 @@ export default function DeleteZonePage() {
   return (
     <div className="min-h-screen bg-[#F4F7FB] pb-32">
 
-      {/* HEADER */}
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate("/admin/dashboard")}
@@ -70,14 +69,12 @@ export default function DeleteZonePage() {
 
       <div className="max-w-4xl mx-auto px-4">
 
-        {/* DESCRIPCIÓN */}
         <div className="mb-6">
           <p className="text-sm text-gray-500">
             Gestiona y elimina zonas registradas en el mapa.
           </p>
         </div>
 
-        {/* LISTADO */}
         <div className="flex flex-col">
           {locations.map((location) => (
             <LocationCard

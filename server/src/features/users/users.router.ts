@@ -1,4 +1,3 @@
-// users.router.ts
 import { Router } from 'express';
 import {
     getUsersController,

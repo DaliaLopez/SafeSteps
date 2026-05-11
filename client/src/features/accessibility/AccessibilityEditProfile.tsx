@@ -17,7 +17,6 @@ export default function AccessibilityEditProfile() {
     password: '',
   });
 
-  // --- LÓGICA DE VOZ (SIN AFECTAR ESTILOS) ---
   const speak = (text: string) => {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -60,7 +59,6 @@ export default function AccessibilityEditProfile() {
 
   return (
     <div className="min-h-screen pb-8">
-      {/* Header con tus estilos originales */}
       <header className="px-8 pt-8 pb-6 flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
@@ -84,7 +82,6 @@ export default function AccessibilityEditProfile() {
         </div>
 
         <div className="space-y-2">
-          {/* Campo Nombre - Estilos originales */}
           <div className="relative focus-within:border-[#296BFF] transition-colors gap-4">
             <label className="text-[#364153] font-semibold text-[15px]">Nombre completo</label>
             <input
@@ -97,7 +94,6 @@ export default function AccessibilityEditProfile() {
             />
           </div>
 
-          {/* Campo Email - Estilos originales */}
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
             <label className="text-[#364153] font-semibold text-[15px]">Email</label>
             <input
@@ -110,7 +106,6 @@ export default function AccessibilityEditProfile() {
             />
           </div>
 
-          {/* Campo Password - Estilos originales */}
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
             <label className="text-[#364153] font-semibold text-[15px]">Nueva contraseña</label>
             <div className="flex items-center w-full p-3 bg-white rounded-2xl text-xs border-none focus:ring-1 focus:ring-blue-500 outline-none">

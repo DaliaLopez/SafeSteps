@@ -16,7 +16,6 @@ export default function NavegationSettings() {
   const [distance, setDistance] = useState('5 metros');
   const [alertType, setAlertType] = useState('Solo riesgo');
 
-  // --- LÓGICA DE VOZ ---
   const speak = (text: string) => {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -24,7 +23,6 @@ export default function NavegationSettings() {
     window.speechSynthesis.speak(utterance);
   };
 
-  // Anuncio inicial
   useEffect(() => {
     speak("Configuración de navegación. Selecciona la distancia y el tipo de alertas.");
   }, []);
@@ -68,12 +66,10 @@ export default function NavegationSettings() {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Header con flecha de regreso */}
       <ProfileHeader title="Navegación" />
 
       <main className="max-w-md mx-auto px-8 space-y-10 mb-8">
 
-        {/* Sección de Distancia */}
         <div onFocus={() => speak("Sección distancia de alerta")}>
           <DistanceSelector
             selected={distance}
@@ -81,7 +77,6 @@ export default function NavegationSettings() {
           />
         </div>
 
-        {/* Sección de Tipo de Alerta */}
         <div onFocus={() => speak("Sección tipo de alerta")}>
           <AlertTypeSelector
             selected={alertType}

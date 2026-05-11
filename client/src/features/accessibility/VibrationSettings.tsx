@@ -15,7 +15,6 @@ export default function VibrationSettings() {
   const [isActive, setIsActive] = useState(true);
   const [intensity, setIntensity] = useState('Media');
 
-  // --- LÓGICA DE VOZ ---
   const speak = (text: string) => {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -23,7 +22,6 @@ export default function VibrationSettings() {
     window.speechSynthesis.speak(utterance);
   };
 
-  // Anunciar al entrar
   useEffect(() => {
     speak("Configuración de vibración");
   }, []);
@@ -62,7 +60,6 @@ export default function VibrationSettings() {
     }
     speak(newState ? "Vibración activada" : "Vibración desactivada");
 
-    // Opcional: Feedback físico si el navegador lo permite
     if (newState) window.navigator.vibrate(200);
   };
 
@@ -77,7 +74,6 @@ export default function VibrationSettings() {
 
     speak(`Intensidad cambiada a ${newIntensity}`);
 
-    // Feedback de vibración según intensidad
     if (isActive) {
       const ms = newIntensity === 'Suave' ? 50 : newIntensity === 'Media' ? 200 : 500;
       window.navigator.vibrate(ms);
@@ -90,12 +86,10 @@ export default function VibrationSettings() {
 
       <main className="max-w-md mx-auto px-8 space-y-6">
 
-        {/* Switch Principal */}
         <div onFocus={() => speak("Opción activar vibración")}>
           <VibrationToggle active={isActive} onToggle={handleToggle} />
         </div>
 
-        {/* Selector de Intensidad */}
         <div onFocus={() => speak("Seleccionar intensidad de vibración")}>
           <IntensitySelector selected={intensity} onSelect={handleIntensityChange} />
         </div>
