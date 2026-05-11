@@ -88,6 +88,7 @@ export const deleteLocationController = async (
         if (!id) throw Boom.badRequest('Id is required');
 
         const location = await deleteLocationService(id as string);
+        console.log("Aqui llegue")
         res.json(location);
     } catch (error) {
         next(error);

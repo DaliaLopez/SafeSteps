@@ -21,7 +21,7 @@ reportsRouter.post('/', createReportController);
 reportsRouter.get('/user/:userId/stats', getUserReportStatsController);
 
 // aquí se maneja TODO (status + alerta automática)
-reportsRouter.put('/status', updateReportStatusController);
+reportsRouter.put('/status', updateReportStatusController)
 
 // resolver reporte
 reportsRouter.post('/:id/resolve', resolveReportController);
