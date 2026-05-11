@@ -1,5 +1,6 @@
 import api from './api'
-import { ReportStatus, type ApprovedReport } from '../types/reports.types'
+import { ReportStatus } from '../types/admin.types'
+import type { ReportDTO } from '../types/admin.types'
 
 export interface UpdateReportStatusPayload {
   id: string
@@ -8,20 +9,21 @@ export interface UpdateReportStatusPayload {
 
 // ── Reportes ──────────────────────────────────────────────────────────────────
 
-export const getApprovedReportsService = async (): Promise<ApprovedReport[]> => {
-  const { data } = await api.get<ApprovedReport[]>('/reports')
-  return data.filter((r: ApprovedReport) => r.status === ReportStatus.APPROVED)
+export const getApprovedReportsService = async (): Promise<ReportDTO[]> => {
+  const { data } = await api.get<ReportDTO[]>('/reports')
+  return data.filter((r: ReportDTO) => r.status === ReportStatus.APPROVED)
 }
 
-export const getPendingReportsService = async (): Promise<ApprovedReport[]> => {
-  const { data } = await api.get<ApprovedReport[]>('/reports/pending')
+export const getPendingReportsService = async (): Promise<ReportDTO[]> => {
+  const { data } = await api.get<ReportDTO[]>('/reports/pending')
   return data
 }
 
 export const updateReportStatusService = async (
   payload: UpdateReportStatusPayload
-): Promise<ApprovedReport> => {
-  const { data } = await api.patch<ApprovedReport>(`/reports/${payload.id}/status`, {
+): Promise<ReportDTO> => {
+  const { data } = await api.put<ReportDTO>('/reports/status', {
+    id: payload.id,
     status: payload.status,
   })
   return data

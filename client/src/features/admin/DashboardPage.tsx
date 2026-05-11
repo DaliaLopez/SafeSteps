@@ -1,19 +1,28 @@
 import { useEffect, useState } from 'react'
 import { MapView } from '../../components/map/MapView'
-import { ReportMarkers, type ApprovedReport } from '../../components/student/report/ReportMarkers'
+import { ReportMarkers } from '../../components/student/report/ReportMarkers'
 import NavbarAdmin from '../../components/admin/NavbarAdmin'
 import Header from '../../components/student/dashboard/Header'
 import { getApprovedReportsService } from '../../services/admin.service'
+import type { ReportDTO } from '../../types/admin.types'
 
 const CAMPUS_CENTER: [number, number] = [3.341571, -76.530198] 
 
 export default function DashboardPage() {
-  const [reports, setReports] = useState<ApprovedReport[]>([])
+  const [reports, setReports] = useState<ReportDTO[]>([])
 
   useEffect(() => {
-    getApprovedReportsService()
-      .then(setReports)
-      .catch((err: unknown) => console.error('Error cargando reportes:', err))
+    const loadReports = async () => {
+      try {
+        const data = await getApprovedReportsService();
+
+        setReports(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadReports();
   }, [])
 
   return (

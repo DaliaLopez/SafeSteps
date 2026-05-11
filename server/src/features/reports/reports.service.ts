@@ -7,9 +7,14 @@ import type {
 
 // Obtener todos los reportes (debug/admin)
 export const getReportsService = async () => {
-    const result = await pool.query(`SELECT * FROM reports`);
-    return result.rows;
-};
+    const result = await pool.query(`
+        SELECT *,
+            ST_Y(location::geometry) as latitude,
+            ST_X(location::geometry) as longitude
+        FROM reports
+    `)
+    return result.rows
+}
 
 // Obtener un reporte específico
 export const getReportByIdService = async (id: string) => {
@@ -29,15 +34,17 @@ export const getReportByIdService = async (id: string) => {
 // Aquí es donde el admin decide aprobar o rechazar
 export const getPendingReportsService = async () => {
     const result = await pool.query(`
-        SELECT r.*, u.name as reporter_name 
+        SELECT r.*,
+            ST_Y(r.location::geometry) as latitude,
+            ST_X(r.location::geometry) as longitude,
+            u.name as reporter_name 
         FROM reports r
         JOIN users u ON r.user_id = u.id
         WHERE r.status = 'Pendiente'
         ORDER BY r.created_at ASC
-    `);
-
-    return result.rows;
-};
+    `)
+    return result.rows
+}
 
 // Crear reporte (lo hace el usuario)
 // Ej: "hay una escalera dañada aquí"

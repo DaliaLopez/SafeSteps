@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { ReportCard } from "../../components/student/report/ReportCard";
 
@@ -11,6 +12,7 @@ import {
 import type { ReportDTO } from "../../types/student.types";
 
 export default function AlertsPage() {
+const navigate = useNavigate();
   const [reports, setReports] = useState<ReportDTO[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,17 +54,23 @@ export default function AlertsPage() {
   };
 
   return (
+    
     <div className="min-h-screen bg-[#F4F7FB] px-4 py-6 pb-32">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#1E293B]">
-            Alertas activas
-          </h1>
-
-          <p className="text-sm text-gray-500 mt-1">
+      {/* Header */}
+      <header className="px-8 pt-8 py-6 flex items-center gap-4">
+        <button
+          onClick={() => navigate('/admin/dashboard')}
+          className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform"
+        >
+          <ArrowLeft size={22} className="text-gray-800" />
+        </button>
+        <div>
+          <h2 className="text-2xl font-bold text-black">Alertas activas</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
             Gestiona las alertas activas del mapa.
           </p>
         </div>
+      </header>
 
         {loading ? (
           <p className="text-sm text-gray-500">
@@ -95,6 +103,5 @@ export default function AlertsPage() {
           </div>
         )}
       </div>
-    </div>
   );
 }

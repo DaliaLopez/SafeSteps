@@ -1,5 +1,3 @@
-/** Alineado con `server/src/features/reports/reports.types.ts` */
-
 export enum Problem{
     OBSTACLE = 'obstacle',
     DAMAGED_STAIRS = 'damaged_stairs',
@@ -41,16 +39,4 @@ export interface ReportDTO {
     location_name:string
     latitude: number
     longitude: number
-}
-
-export interface ApprovedReport {
-  id: string
-  description: string
-  problem_type: ProblemType
-  danger_level: DangerLevel
-  location_name: string
-  status: ReportStatus
-  created_at: string
-  latitude: number
-  longitude: number
 }

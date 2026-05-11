@@ -4,8 +4,9 @@ import {
   DangerLevel,
   ReportStatus,
   ProblemType,
-  type ApprovedReport,
+  type ReportDTO,
 } from '../../../types/reports.types'
+
 
 export type { ApprovedReport } from '../../../types/reports.types'
 
@@ -83,7 +84,7 @@ const levelColor: Record<DangerLevel, string> = {
 }
 
 interface ReportMarkersProps {
-  reports: ApprovedReport[]
+  reports: ReportDTO[]
 }
 
 export const ReportMarkers = ({ reports }: ReportMarkersProps) => {
