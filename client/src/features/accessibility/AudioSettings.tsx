@@ -3,8 +3,16 @@ import { ProfileHeader } from '../../components/accessibility/audio/ProfileHeade
 import { VolumeControl } from '../../components/accessibility/audio/VolumeControl';
 import { SpeedSelector } from '../../components/accessibility/audio/SpeedSelector';
 import { ToggleSetting } from '../../components/accessibility/audio/ToggleSetting';
+import { useAuth } from '../../context/AuthContext';
+
+import {
+  getAccessibilitySettingsService,
+  updateAccessibilitySettingsService
+} from '../../services/accessibility-settings.service';
 
 export default function AudioSettings() {
+  const { user } = useAuth();
+
   const [volume, setVolume] = useState(50);
   const [speed, setSpeed] = useState('Normal');
   const [autoRepeat, setAutoRepeat] = useState(true);
@@ -28,35 +36,98 @@ export default function AudioSettings() {
   // --- EFECTOS PARA REACCIONAR A CAMBIOS ---
   // Cuando el usuario cambie la velocidad o el auto-repeat, la app le avisará por voz
   useEffect(() => {
-    // El volumen no lo leemos constantemente al mover el slider para no aturdir, 
-    // solo cuando se suelta (podrías activarlo si prefieres)
-  }, [volume]);
 
-  const handleSpeedChange = (newSpeed: string) => {
+    const loadSettings = async () => {
+
+      if (!user?.id) return;
+
+      try {
+
+        const settings =
+          await getAccessibilitySettingsService(user.id);
+
+        setVolume(settings.volume);
+        setSpeed(settings.voice_speed);
+        setAutoRepeat(settings.auto_repeat);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadSettings();
+
+  }, [user]);
+
+  const handleSpeedChange = async (newSpeed: string) => {
+
     setSpeed(newSpeed);
+
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        voice_speed: newSpeed
+      });
+    }
+
     speak(`Velocidad de voz cambiada a ${newSpeed}`);
   };
 
-  const handleToggleRepeat = () => {
+  const handleToggleRepeat = async () => {
     const newState = !autoRepeat;
+
     setAutoRepeat(newState);
-    speak(newState ? "Repetición automática activada" : "Repetición automática desactivada");
+
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        auto_repeat: newState
+      });
+    }
+
+    speak(
+      newState
+        ? "Repetición automática activada"
+        : "Repetición automática desactivada"
+    );
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-10">
+    <div className="min-h-screen pb-10">
       <ProfileHeader title="Audio" />
 
-      <main className="max-w-md mx-auto px-6 space-y-6">
-        <h3 className="text-[#364153] font-bold ml-2">Configuración de Audio</h3>
+      <main className="max-w-md mx-auto px-8 space-y-6">
+        <h3 className="ml-2">Configuración de audio</h3>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 space-y-10">
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 space-y-5">
           {/* Al terminar de mover el slider de volumen, lee el porcentaje */}
           <div
-            onMouseUp={() => speak(`Volumen al ${volume} por ciento`)}
-            onTouchEnd={() => speak(`Volumen al ${volume} por ciento`)}
+            onMouseUp={async () => { speak(`Volumen al ${volume} por ciento`);
+              if (user?.id) {
+                try { await updateAccessibilitySettingsService(user.id, {
+                    volume
+                  });
+                } catch (error) {
+                  console.error(error);
+                }
+              }
+            }}
+
+            onTouchEnd={async () => { speak(`Volumen al ${volume} por ciento`);
+              if (user?.id) {
+                try { await updateAccessibilitySettingsService(user.id, {
+                    volume
+                  });
+                } catch (error) {
+                  console.error(error);
+                }
+              }
+            }}
           >
-            <VolumeControl value={volume} onChange={setVolume} />
+            <VolumeControl
+              value={volume}
+              onChange={(newVolume) => {
+                setVolume(newVolume);
+              }}
+            />
           </div>
 
           <SpeedSelector selected={speed} onSelect={handleSpeedChange} />

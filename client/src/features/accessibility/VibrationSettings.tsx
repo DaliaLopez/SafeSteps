@@ -3,7 +3,15 @@ import { ProfileHeader } from '../../components/accessibility/vibration/ProfileH
 import { VibrationToggle } from '../../components/accessibility/vibration/VibrationToggle';
 import { IntensitySelector } from '../../components/accessibility/vibration/IntensitySelector';
 
+import { useAuth } from '../../context/AuthContext';
+
+import {
+  getAccessibilitySettingsService,
+  updateAccessibilitySettingsService
+} from '../../services/accessibility-settings.service';
+
 export default function VibrationSettings() {
+  const { user } = useAuth();
   const [isActive, setIsActive] = useState(true);
   const [intensity, setIntensity] = useState('Media');
 
@@ -20,17 +28,53 @@ export default function VibrationSettings() {
     speak("Configuración de vibración");
   }, []);
 
-  const handleToggle = () => {
+  useEffect(() => {
+
+    const loadSettings = async () => {
+
+      if (!user?.id) return;
+
+      try {
+
+        const settings =
+          await getAccessibilitySettingsService(user.id);
+
+        setIsActive(settings.vibration_active);
+        setIntensity(settings.vibration_intensity);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadSettings();
+
+  }, [user]);
+
+  const handleToggle = async () => {
     const newState = !isActive;
     setIsActive(newState);
+
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        vibration_active: newState
+      });
+    }
     speak(newState ? "Vibración activada" : "Vibración desactivada");
 
     // Opcional: Feedback físico si el navegador lo permite
     if (newState) window.navigator.vibrate(200);
   };
 
-  const handleIntensityChange = (newIntensity: string) => {
+  const handleIntensityChange = async (newIntensity: string) => {
     setIntensity(newIntensity);
+    
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        vibration_intensity: newIntensity
+      });
+    }
+
     speak(`Intensidad cambiada a ${newIntensity}`);
 
     // Feedback de vibración según intensidad
@@ -41,10 +85,10 @@ export default function VibrationSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAF7] pb-10">
+    <div className="min-h-screen pb-10">
       <ProfileHeader title="Vibración" />
 
-      <main className="max-w-md mx-auto px-6 space-y-10">
+      <main className="max-w-md mx-auto px-8 space-y-6">
 
         {/* Switch Principal */}
         <div onFocus={() => speak("Opción activar vibración")}>

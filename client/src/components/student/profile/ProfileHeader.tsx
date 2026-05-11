@@ -15,3 +15,4 @@ export const ProfileHeader = ({ title }: { title: string }) => {
         </header>
     );
 };
+

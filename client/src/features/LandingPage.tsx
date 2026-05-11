@@ -3,7 +3,7 @@ import logo from "../assets/LogoBlanco.png";
 
 export default function LandingPage() {
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-b from-blue-600 to-gray-200 px-4">
+    <div className="h-screen w-full flex items-center justify-center bg-linear-to-b from-blue-600 to-gray-200 px-4">
 
       <div className="w-full max-w-sm text-center">
 

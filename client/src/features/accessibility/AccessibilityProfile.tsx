@@ -28,7 +28,7 @@ export default function AccessibilityProfile() {
     };
 
     return (
-        <div className="min-h-screen pb-10 bg-[#F9FAF7]">
+        <div className="min-h-screen pb-10">
             {/* Header */}
             <ProfileHeader title="Perfil" />
 

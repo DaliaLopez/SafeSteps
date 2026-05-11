@@ -6,7 +6,7 @@ export const VibrationToggle = ({ active, onToggle }: { active: boolean, onToggl
             <div className="p-2 bg-[#F0F7FF] rounded-lg text-[#296BFF]">
                 <VibrateIcon size={24} />
             </div>
-            <span className="text-[#1E293B] font-bold text-lg">Activar vibración</span>
+            <span className="text-[#1E293B] font-semibold text-normal">Activar vibración</span>
         </div>
         <button
             onClick={onToggle}

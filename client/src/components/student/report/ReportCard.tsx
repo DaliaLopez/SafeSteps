@@ -1,5 +1,5 @@
-import { MapPin, PenLine, AlertTriangle, FileText, Clock, Calendar } from "lucide-react";
-import { ReportStatus, Problem, DangerLevel } from "../../../types/student.types";
+import { MapPin, PenLine, AlertTriangle, FileText, Clock, Calendar} from "lucide-react";
+import { ReportStatus, Problem, DangerLevel} from "../../../types/student.types";
 
 import type { ReportDTO } from "../../../types/student.types";
 

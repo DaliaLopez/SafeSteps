@@ -3,7 +3,16 @@ import { ProfileHeader } from '../../components/accessibility/navegation/Profile
 import { DistanceSelector } from '../../components/accessibility/navegation/DistanceSelector';
 import { AlertTypeSelector } from '../../components/accessibility/navegation/AlertTypeSelector';
 
+import { useAuth } from '../../context/AuthContext';
+
+import {
+  getAccessibilitySettingsService,
+  updateAccessibilitySettingsService
+} from '../../services/accessibility-settings.service';
+
 export default function NavegationSettings() {
+  const { user } = useAuth();
+
   const [distance, setDistance] = useState('5 metros');
   const [alertType, setAlertType] = useState('Solo riesgo');
 
@@ -20,22 +29,49 @@ export default function NavegationSettings() {
     speak("Configuración de navegación. Selecciona la distancia y el tipo de alertas.");
   }, []);
 
-  const handleDistanceChange = (val: string) => {
+  useEffect(() => {
+
+    const loadSettings = async () => {
+
+      if (!user?.id) return;
+      try {
+        const settings =
+          await getAccessibilitySettingsService(user.id);
+        setDistance(settings.alert_distance);
+        setAlertType(settings.alert_type);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadSettings();
+  }, [user]);
+
+  const handleDistanceChange = async (val: string) => {
     setDistance(val);
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        alert_distance: val
+      });
+    }
     speak(`Distancia de alerta configurada a ${val}`);
   };
 
-  const handleTypeChange = (val: string) => {
+  const handleTypeChange = async (val: string) => {
     setAlertType(val);
+    if (user?.id) {
+      await updateAccessibilitySettingsService(user.id, {
+        alert_type: val
+      });
+    }
     speak(`Tipo de alerta configurado a: ${val}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAF7] pb-10">
+    <div className="min-h-screen pb-20">
       {/* Header con flecha de regreso */}
       <ProfileHeader title="Navegación" />
 
-      <main className="max-w-md mx-auto px-6 space-y-10 mt-4">
+      <main className="max-w-md mx-auto px-8 space-y-10 mb-8">
 
         {/* Sección de Distancia */}
         <div onFocus={() => speak("Sección distancia de alerta")}>
@@ -53,7 +89,7 @@ export default function NavegationSettings() {
           />
         </div>
 
-        <p className="text-center text-gray-400 text-xs mt-12 px-8">
+        <p className="text-center text-gray-400 text-xs mt-12">
           Estas configuraciones afectan cómo recibes las notificaciones durante tu recorrido por el campus.
         </p>
       </main>

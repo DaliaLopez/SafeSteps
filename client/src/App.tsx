@@ -30,6 +30,7 @@ import AccessibilityAlertPage from './features/accessibility/AlertPage'
 import AccessibilityNavegationSettings from './features/accessibility/NavegationSettings'
 import AccessibilityAudioSettings from './features/accessibility/AudioSettings'
 import AccessibilityVibrationSettings from './features/accessibility/VibrationSettings'
+import NavegationDashboard from './features/accessibility/NavegationDashboard'
 
 const App = () => {
   const { token, user } = useAuth()
@@ -67,6 +68,7 @@ const App = () => {
       <Route path="/accessibility/settings/navigation"    element={isAccessibility ? <AccessibilityNavegationSettings /> : <Navigate to="/login" />} />
       <Route path="/accessibility/settings/audio"         element={isAccessibility ? <AccessibilityAudioSettings />      : <Navigate to="/login" />} />
       <Route path="/accessibility/settings/vibration"     element={isAccessibility ? <AccessibilityVibrationSettings />  : <Navigate to="/login" />} />
+      <Route path="/accessibility/navegation"             element={isAccessibility ? <NavegationDashboard />          : <Navigate to="/login" />} />
 
       <Route path="*" element={<Navigate to={token ? '/admin/dashboard' : '/login'} />} />
     </Routes>

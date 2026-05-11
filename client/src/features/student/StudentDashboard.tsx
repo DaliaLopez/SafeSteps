@@ -1,6 +1,6 @@
-import Header from "../../components/student/dashboard/Header";
+import Header from "../../components/Header";
 import { MapView } from "../../components/map/MapView";
-import NavbarStudent from "../../components/student/dashboard/NavbarStudent";
+import NavbarStudent from "../../components/student/NavbarStudent";
 
 export default function StudentDashboard() {
 
