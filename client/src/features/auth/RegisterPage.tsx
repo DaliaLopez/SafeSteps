@@ -11,7 +11,6 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [role, setRole] = useState("student");
-  const [visual] = useState<"no" | "si">("no");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +27,7 @@ export default function RegisterPage() {
         name,
         email,
         password,
-        role: visual === "si" ? "accessibility" : "student",
+        role: role as "student" | "accessibility" | "admin",
       });
       navigate("/login");
     } catch (err: any) {
@@ -41,11 +40,7 @@ export default function RegisterPage() {
   return (
     <div className="flex items-center justify-center bg-white px-4 py-6">
       <div className="w-full max-w-100 p-6 md:p-10 flex flex-col items-center mt-2">
-          <img
-            src={logo}
-            alt="SafeSteps"
-            className="w-30 h-30 object-contain"
-          />
+        <img src={logo} alt="SafeSteps" className="w-30 h-30 object-contain" />
 
         <h2 className="font-bold pb-4" style={{ color: "#2563eb" }}>
           Registrate
@@ -115,7 +110,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[14px] font-semibold text-gray-500 ml-1 text-left w-full">Selecciona tu rol</label>
+            <label className="text-[14px] font-semibold text-gray-500 ml-1 text-left w-full">
+              Selecciona tu rol
+            </label>
             <div className="relative">
               <select
                 value={role}
@@ -126,7 +123,10 @@ export default function RegisterPage() {
                 <option value="accessibility">Persona con discapacidad</option>
                 <option value="admin">Administrador</option>
               </select>
-              <ChevronDown className="absolute right-4 top-4 text-gray-400 pointer-events-none" size={18} />
+              <ChevronDown
+                className="absolute right-4 top-4 text-gray-400 pointer-events-none"
+                size={18}
+              />
             </div>
           </div>
 

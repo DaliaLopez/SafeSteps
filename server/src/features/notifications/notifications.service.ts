@@ -23,8 +23,14 @@ export const createNotificationService = async (
     }
 
     const result = await pool.query(
-        `INSERT INTO notifications (user_id, alert_id)
-        VALUES ($1, $2)
+    `INSERT INTO notifications (user_id, alert_id)
+     SELECT $1, $2
+     WHERE EXISTS (
+         SELECT 1 FROM alerts a
+         JOIN locations l ON a.location_id = l.id
+         WHERE a.id = $2
+         AND l.is_deleted = false  -- ← solo crea si la zona no está borrada
+     )
         RETURNING *`,
         [data.user_id, data.alert_id]
     );

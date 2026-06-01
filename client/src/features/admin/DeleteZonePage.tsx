@@ -1,34 +1,14 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { ArrowLeft } from "lucide-react";
 
 import LocationCard from "../../components/admin/ZoneCard";
 
-import {
-  getLocationsService,
-  deleteLocationService,
-} from "../../services/locations.service";
-
-import type { Location } from "../../services/locations.service";
+import { useLocationsContext } from "../../providers/LocationsProvider"; 
 
 export default function DeleteZonePage() {
-  const [locations, setLocations] = useState<Location[]>([]);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const data = await getLocationsService();
-        setLocations(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLocations();
-  }, []);
+  
+  const { locations, loading, deleteLocation } = useLocationsContext();
 
   const handleDelete = async (id: string) => {
     const confirmDelete = confirm(
@@ -38,12 +18,8 @@ export default function DeleteZonePage() {
     if (!confirmDelete) return;
 
     try {
-      await deleteLocationService(id);
-
-      setLocations((prev) =>
-        prev.filter((location) => location.id !== id)
-      );
-
+      await deleteLocation(id);
+      
       alert("Zona eliminada correctamente");
     } catch (error) {
       console.error(error);
@@ -51,9 +27,16 @@ export default function DeleteZonePage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center">
+        <p className="text-gray-500 font-medium text-sm animate-pulse">Cargando zonas...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F4F7FB] pb-32">
-
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate("/admin/dashboard")}
@@ -68,7 +51,6 @@ export default function DeleteZonePage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4">
-
         <div className="mb-6">
           <p className="text-sm text-gray-500">
             Gestiona y elimina zonas registradas en el mapa.
@@ -76,15 +58,20 @@ export default function DeleteZonePage() {
         </div>
 
         <div className="flex flex-col">
-          {locations.map((location) => (
-            <LocationCard
-              key={location.id}
-              location={location}
-              onDelete={handleDelete}
-            />
-          ))}
+          {locations.length === 0 ? (
+            <p className="text-center text-gray-400 text-sm mt-10">
+              No hay zonas activas registradas en el sistema.
+            </p>
+          ) : (
+            locations.map((location) => (
+              <LocationCard
+                key={location.id}
+                location={location}
+                onDelete={() => handleDelete(location.id)}
+              />
+            ))
+          )}
         </div>
-
       </div>
     </div>
   );

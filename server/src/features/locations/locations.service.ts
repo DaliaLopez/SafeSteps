@@ -6,9 +6,11 @@ import type { CreateLocationDTO, CheckLocationDTO } from './locations.types';
 // Esto incluye edificios, rampas, escaleras, etc. Se usa para pintar el mapa completo en el frontend
 
 export const getLocationsService = async () => {
-    const result = await pool.query(`SELECT * FROM locations`);
-    return result.rows;
-};
+    const result = await pool.query(
+        `SELECT * FROM locations WHERE is_deleted = false`
+    )
+    return result.rows
+}
 
 // Crear una nueva zona (ej: un edificio o una rampa)
 // Aquí el admin define zonas FIJAS del sistema 
@@ -43,7 +45,8 @@ export const checkIfUserIsInsideService = async (
     const result = await pool.query(
         `SELECT name, description, type  
         FROM locations 
-        WHERE ST_Intersects(
+        WHERE is_deleted = false 
+        AND ST_Intersects(
             boundary,
             ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
         )`,
@@ -54,7 +57,7 @@ export const checkIfUserIsInsideService = async (
     );
 
     if (result.rows.length === 0) {
-        return null; // no está dentro de ninguna zona
+        return null;
     }
 
     return result.rows[0];
@@ -62,19 +65,17 @@ export const checkIfUserIsInsideService = async (
 
 // Eliminar zona (solo admin)
 export const deleteLocationService = async (id: string) => {
-
     try {
-     const result = await pool.query(
-        `DELETE FROM locations WHERE id = $1 RETURNING *`,
-        [id]
-    );
+        const result = await pool.query(
+            `UPDATE locations SET is_deleted = true WHERE id = $1 RETURNING *`,
+            [id]
+        );
 
-    return result.rows[0];
+        return result.rows[0];
 
-    }catch(error:any){
-        console.log(error)
-
+    } catch (error: any) {
+        console.error(error);
+        throw Boom.internal('Error deleting location'); 
     }
 
-    
 };
