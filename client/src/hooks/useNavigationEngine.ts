@@ -4,14 +4,16 @@ import { createNotificationService } from '../services/accessibility.service';
 
 export const useNavigationEngine = (
     userId: string | undefined,
-    locations: any[], // Zonas normales (Edificios, escaleras)
-    activeAlerts: any[], // Peligros reportados
+    locations: any[], 
+    activeAlerts: any[], 
     alertDistanceSetting: number
 ) => {
     const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number } | null>(null);
     
-    // Memoria plana anti-spam (guarda IDs de zonas y alertas)
-    const notifiedHistory = useRef<Record<string, number>>({});
+    // Rastreo de zonas actuales (¿en qué edificio estoy?)
+    const currentZoneId = useRef<string | null>(null);
+    // Rastreo de alertas (historial de notificaciones por alerta)
+    const notifiedAlerts = useRef<Record<string, number>>({});
 
     useEffect(() => {
         if (!navigator.geolocation) return;
@@ -22,63 +24,57 @@ export const useNavigationEngine = (
                 setCurrentLocation({ lat: latitude, lng: longitude });
                 const now = Date.now();
 
-                // 1. NAVEGACIÓN NORMAL (Guía de ubicación)
-                locations.forEach((loc) => {
-                    // Validar que el backend sí mandó las coordenadas
-                    if (!loc.latitude || !loc.longitude) return; 
+                // 1. LÓGICA DE ZONAS (Entrada y Salida)
+                let zoneFound = locations.find(loc => 
+                    calculateDistanceInMetres(latitude, longitude, loc.latitude, loc.longitude) <= 30 // Rango de zona (ej: 30m)
+                );
 
-                    const distance = calculateDistanceInMetres(latitude, longitude, loc.latitude, loc.longitude);
-                    if (distance <= alertDistanceSetting) {
-                        const lastNotified = notifiedHistory.current[`loc_${loc.id}`] || 0;
-                        if (now - lastNotified > 180000) { // 3 minutos anti-spam
-                            notifiedHistory.current[`loc_${loc.id}`] = now;
+                if (zoneFound && currentZoneId.current !== zoneFound.id) {
+                    currentZoneId.current = zoneFound.id;
+                    const mensaje = `Has ingresado al ${zoneFound.name}.`;
+                    
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
+                } else if (!zoneFound && currentZoneId.current !== null) {
+                    currentZoneId.current = null;
+                    const mensaje = `Has salido de la zona.`;
+                    
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
+                }
+
+                // 2. LÓGICA DE ALERTAS Y ZONAS FIJAS (Escaleras, Ascensores, Peligros)
+                // Estos notifican CADA VEZ que el usuario se acerca, sin importar si está en un edificio
+                activeAlerts.forEach((item) => {
+                    const dist = calculateDistanceInMetres(latitude, longitude, item.latitude, item.longitude);
+                    
+                    if (dist <= alertDistanceSetting) {
+                        const lastNotified = notifiedAlerts.current[item.id] || 0;
+                        
+                        // Si el usuario vuelve a pasar cerca, volvemos a notificar (cada 2 minutos)
+                        if (now - lastNotified > 120000) {
+                            notifiedAlerts.current[item.id] = now;
 
                             let mensaje = "";
-                            if (loc.type === 'building') {
-                                mensaje = `Has ingresado al ${loc.name}.`;
-                            } else if (loc.type === 'stairs') {
-                                mensaje = `Estás cerca de una escalera en ${loc.name}.`;
-                            } else if (loc.type === 'elevator') {
-                                mensaje = `Estás cerca de un ascensor en ${loc.name}.`;
-                            } else if (loc.type === 'bathroom') {
-                                mensaje = `Estás cerca de un baño en ${loc.name}.`;
+                            // Si es una alerta de reporte (tiene description)
+                            if (item.description && !['building', 'stairs', 'elevator', 'bathroom'].includes(item.type)) {
+                                mensaje = `¡Precaución! ${item.description}.`;
                             } else {
-                                mensaje = `Estás en la zona: ${loc.name}.`;
+                                // Si es una zona fija
+                                switch (item.type) {
+                                    case 'stairs': mensaje = `Estás cerca de una escalera.`; break;
+                                    case 'elevator': mensaje = `Estás cerca de un ascensor.`; break;
+                                    case 'bathroom': mensaje = `Estás cerca de un baño.`; break;
+                                    default: mensaje = `Estás cerca de ${item.location_name}.`;
+                                }
                             }
 
                             window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(mensaje);
-                            utterance.lang = 'es-ES';
-                            window.speechSynthesis.speak(utterance);
-                        }
-                    }
-                });
-
-                // 2. ALERTAS DE PELIGRO (Obstáculos reportados)
-                activeAlerts.forEach((alert) => {
-                    if (!alert.latitude || !alert.longitude) return;
-
-                    const distance = calculateDistanceInMetres(latitude, longitude, alert.latitude, alert.longitude);
-                    if (distance <= alertDistanceSetting) {
-                        const lastNotified = notifiedHistory.current[`alert_${alert.id}`] || 0;
-                        if (now - lastNotified > 180000) {
-                            notifiedHistory.current[`alert_${alert.id}`] = now;
-
-                            // Notificación de peligro real
-                            const mensajePeligro = `¡Precaución! Obstáculo cercano en ${alert.location_name}: ${alert.description}.`;
-
-                            window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(mensajePeligro);
-                            utterance.lang = 'es-ES';
-                            window.speechSynthesis.speak(utterance);
-
-                            if (window.navigator.vibrate) {
-                                window.navigator.vibrate([400, 200, 400, 200, 400]); // Vibración más fuerte para peligros
-                            }
-
-                            if (userId) {
-                                createNotificationService({ user_id: userId, alert_id: alert.id })
-                                    .catch(err => console.error(err));
+                            window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
+                            if (window.navigator.vibrate) window.navigator.vibrate([300, 100, 300]);
+                            
+                            if (userId && item.id.length > 5) { // Evita notificar puntos fijos como alertas
+                                createNotificationService({ user_id: userId, alert_id: item.id }).catch(console.error);
                             }
                         }
                     }
