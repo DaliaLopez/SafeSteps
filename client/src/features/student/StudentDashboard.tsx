@@ -5,10 +5,12 @@ import NavbarStudent from "../../components/student/NavbarStudent";
 import { ReportMarkers } from "../../components/student/report/ReportMarkers";
 import { getApprovedReportsService } from "../../services/admin.service";
 import type { ReportDTO } from "../../types/admin.types";
+import useSupabase from "../../hooks/useSupabase";
 
 export default function StudentDashboard() {
   const universityCenter: [number, number] = [3.341, -76.530];
   const [reports, setReports] = useState<ReportDTO[]>([]);
+  const supabase = useSupabase();
 
   useEffect(() => {
     const loadReports = async () => {
@@ -19,8 +21,26 @@ export default function StudentDashboard() {
         console.error("Error cargando reportes:", error);
       }
     };
+    
     loadReports();
-  }, []);
+
+    const channel = supabase
+      .channel("realtime-alerts-student")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "alerts" },
+        (payload) => {
+          console.log("Cambio en alertas detectado:", payload);
+          loadReports();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    
+  }, [supabase]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white">
