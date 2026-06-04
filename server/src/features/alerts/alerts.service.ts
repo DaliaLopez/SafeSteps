@@ -59,7 +59,13 @@ export const getAlertByLocationService = async (locationId: string) => {
 
 export const getAlertsForAccessibilityService = async () => {
     const result = await pool.query(
-        `SELECT l.name, a.message, l.type
+        `SELECT 
+            a.id, 
+            a.message as description, 
+            l.name as location_name, 
+            l.type,
+            ST_Y(ST_Centroid(l.boundary::geometry)) as latitude,
+            ST_X(ST_Centroid(l.boundary::geometry)) as longitude
         FROM alerts a
         JOIN locations l ON a.location_id = l.id
         WHERE a.is_active = true
@@ -68,7 +74,6 @@ export const getAlertsForAccessibilityService = async () => {
 
     return result.rows;
 };
-
 
 // Desactivar alerta. Se usa cuando el problema YA SE SOLUCIONÓ
 //

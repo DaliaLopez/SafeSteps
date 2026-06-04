@@ -13,7 +13,7 @@ export default function NavbarAdmin() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <nav className="fixed bottom-0 left-0 z-[9999] bg-white p-6 md:p-3 rounded-t-[40px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)] md:shadow-md w-full mt-auto">
+    <nav className="fixed bottom-0 left-0 z-9999 bg-white p-6 md:p-3 rounded-t-[40px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)] md:shadow-md w-full mt-auto">
       <div className="flex justify-center mb-2 md:hidden">
         <button
           onClick={() => setIsExpanded(!isExpanded)}

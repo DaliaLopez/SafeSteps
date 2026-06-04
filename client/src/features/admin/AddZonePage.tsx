@@ -104,7 +104,7 @@ export default function AddZonePage() {
             </p>
           </div>
 
-          <div className="h-[450px] rounded-3xl overflow-hidden">
+          <div className="h-112.5 rounded-3xl overflow-hidden">
             <MapContainer
               center={[3.3415, -76.5301]}
               zoom={17}
