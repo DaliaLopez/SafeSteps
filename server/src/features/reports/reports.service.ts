@@ -109,18 +109,17 @@ export const updateReportStatusService = async (
 export const promoteReportToAlertService = async (reportId: string) => {
     const result = await pool.query(
         `INSERT INTO alerts (location_id, message)
-        SELECT l.id, r.description
-        FROM reports r, locations l
+        SELECT (
+            SELECT id FROM locations l
+            ORDER BY ST_Distance(l.boundary, r.location) ASC
+            LIMIT 1
+        ), r.description
+        FROM reports r
         WHERE r.id = $1
-        AND r.status = 'Aprobado' 
-        AND ST_Intersects(l.boundary, r.location)
+        AND r.status = 'Aprobado'
         RETURNING *`,
         [reportId]
     );
-
-    // 1. Toma el reporte
-    // 2. Encuentra en qué zona cae
-    // 3. Crea una alerta en esa zona
 
     return result.rows[0];
 };
