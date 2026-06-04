@@ -46,6 +46,7 @@ export const createLocationService = async (location: CreateLocationDTO) => {
     }
 };
 
+
 // Saber en qué zona está el usuario
 // Compara ese punto con TODOS los polígonos (locations) Si cae dentro de uno → devuelve ese lugar
 
