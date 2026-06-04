@@ -11,6 +11,7 @@ import { getApprovedReportsService } from '../../services/admin.service';
 import { getAccessibilitySettingsService } from '../../services/accessibility-settings.service';
 import { ReportMarkers } from '../../components/student/report/ReportMarkers';
 import { useNavigationEngine } from '../../hooks/useNavigationEngine';
+import useSupabase from '../../hooks/useSupabase';
 
 export default function NavegationDashboard() {
     const { user } = useAuth();
@@ -23,12 +24,42 @@ export default function NavegationDashboard() {
     const [locations, setLocations] = useState<any[]>([]);
     const [alerts, setAlerts] = useState<any[]>([]);
     const [alertDistance, setAlertDistance] = useState<number>(5);
+    const supabase = useSupabase();
 
     useEffect(() => {
-        const loadInitialData = async () => {
+        const loadMapReports = async () => {
             try {
                 const approvedData = await getApprovedReportsService();
                 setReports(approvedData);
+            } catch (error) {
+                console.error("Error en navegación cargando marcadores del mapa:", error);
+            }
+        };
+
+        loadMapReports();
+
+        const channel = supabase
+            .channel("realtime-alerts-navigation")
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "alerts" },
+                (payload) => {
+                    console.log("Nueva alerta detectada", payload);
+                    setTimeout(() => {
+                        loadMapReports();
+                    }, 300);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase]);
+    
+    useEffect(() => {
+        const loadInitialData = async () => {
+            try {
 
                 if (user?.id) {
                     const settings = await getAccessibilitySettingsService(user.id);

@@ -6,11 +6,13 @@ import { useAuth } from '../../context/AuthContext';
 import { getApprovedReportsService } from '../../services/admin.service';
 import { ReportMarkers } from '../../components/student/report/ReportMarkers';
 import type { ReportDTO } from '../../types/reports.types';
+import useSupabase from '../../hooks/useSupabase';
 
 export default function AccessibilityDashboard() {
     const { user } = useAuth();
     const universityCenter: [number, number] = [3.341, -76.530];
     const [reports, setReports] = useState<ReportDTO[]>([]);
+    const supabase = useSupabase();
 
     const speak = (text: string) => {
         window.speechSynthesis.cancel();
@@ -20,16 +22,36 @@ export default function AccessibilityDashboard() {
     };
 
     useEffect(() => {
+
         const loadReports = async () => {
-            try {
-                const data = await getApprovedReportsService();
-                setReports(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
+        try {
+            const data = await getApprovedReportsService();
+            setReports(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
         loadReports();
-    }, []);
+
+        const channel = supabase
+            .channel("realtime-alerts-accessibility")
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "alerts" },
+                (payload) => {
+                    console.log("Cambio en alertas detectado en Accesibilidad:", payload);
+                    setTimeout(() => {
+                        loadReports();
+                    }, 300);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase]);
 
     const repeatDashboardInfo = () => {
         const welcomeMessage = user?.name ? `Bienvenido ${user.name}` : "Bienvenido o bienvenida";
