@@ -30,8 +30,10 @@ export default function StudentDashboard() {
         "postgres_changes",
         { event: "*", schema: "public", table: "alerts" },
         (payload) => {
-          console.log("Cambio en alertas detectado:", payload);
-          loadReports();
+          console.log("Cambio en alertas detectado en Estudiante:", payload);
+          setTimeout(() => {
+            loadReports();
+          }, 300);
         }
       )
       .subscribe();
