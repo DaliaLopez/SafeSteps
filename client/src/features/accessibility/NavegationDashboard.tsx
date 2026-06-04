@@ -1,29 +1,55 @@
 import { useEffect, useState } from 'react';
+import { CircleMarker } from 'react-leaflet';
 import { MapView } from "../../components/map/MapView";
 import NavbarNavegation from "../../components/accessibility/NavbarNavegation";
 import HeaderNavegation from '../../components/accessibility/HeaderNavegation';
 import { useAuth } from '../../context/AuthContext';
+import { getLocationsService } from '../../services/accessibility.service';
 import { getAlertsForAccessibilityService } from '../../services/student.service';
-import type { ReportDTO } from '../../types/reports.types';
+import type { ReportDTO } from '../../types/admin.types'; 
 import { getApprovedReportsService } from '../../services/admin.service';
+import { getAccessibilitySettingsService } from '../../services/accessibility-settings.service';
 import { ReportMarkers } from '../../components/student/report/ReportMarkers';
+import { useNavigationEngine } from '../../hooks/useNavigationEngine';
 
 export default function NavegationDashboard() {
     const { user } = useAuth();
     const universityCenter: [number, number] = [3.341, -76.530];
+    
+    // Estados para pintar los pines (reportes aprobados)
     const [reports, setReports] = useState<ReportDTO[]>([]);
 
+    // Estados para el motor GPS (Navegación + Peligros)
+    const [locations, setLocations] = useState<any[]>([]);
+    const [alerts, setAlerts] = useState<any[]>([]);
+    const [alertDistance, setAlertDistance] = useState<number>(5);
+
     useEffect(() => {
-        const loadReports = async () => {
+        const loadInitialData = async () => {
             try {
-                const data = await getApprovedReportsService();
-                setReports(data);
+                const approvedData = await getApprovedReportsService();
+                setReports(approvedData);
+
+                if (user?.id) {
+                    const settings = await getAccessibilitySettingsService(user.id);
+                    setAlertDistance(parseInt(settings.alert_distance.split(' ')[0]) || 5);
+                }
+                
+                // Cargamos ambas listas para el GPS
+                const locationsData = await getLocationsService();
+                setLocations(locationsData);
+
+                const alertsData = await getAlertsForAccessibilityService();
+                setAlerts(alertsData);
             } catch (error) {
                 console.error(error);
             }
         };
-        loadReports();
-    }, []);
+        loadInitialData();
+    }, [user]);
+
+    // Pasamos ambas listas al motor
+    const { currentLocation } = useNavigationEngine(user?.id, locations, alerts, alertDistance);
 
     const speak = (text: string, callback?: () => void) => {
         window.speechSynthesis.cancel();
@@ -41,12 +67,12 @@ export default function NavegationDashboard() {
         try {
             let message = `Pantalla de navegación activa. `;
 
-            const alerts = await getAlertsForAccessibilityService();
+            const alertsData = await getAlertsForAccessibilityService();
 
-            if (alerts && alerts.length > 0) {
-                const pointsDescription = alerts
+            if (alertsData && alertsData.length > 0) {
+                const pointsDescription = alertsData
                     .slice(0, 3)
-                    .map(a => a.description || "Obstáculo no especificado")
+                    .map((a: any) => a.description || "Obstáculo no especificado")
                     .join(", ");
 
                 message += `Puntos de interés detectados cerca de ti: ${pointsDescription}. `;
@@ -64,6 +90,7 @@ export default function NavegationDashboard() {
 
     useEffect(() => {
         repeatNavegationInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     return (
@@ -73,8 +100,19 @@ export default function NavegationDashboard() {
             </div>
 
             <main className="flex-1 relative z-10 -mt-16 outline-none" tabIndex={0} onFocus={() => speak("Mapa de navegación en tiempo real")}>
-                <MapView center={universityCenter} zoom={17}> 
+                <MapView 
+                    center={currentLocation ? [currentLocation.lat, currentLocation.lng] : universityCenter} 
+                    zoom={17}
+                > 
                     <ReportMarkers reports={reports} />
+                    
+                    {currentLocation && (
+                        <CircleMarker 
+                            center={[currentLocation.lat, currentLocation.lng]} 
+                            radius={8}
+                            pathOptions={{ fillColor: '#296BFF', color: 'white', weight: 2, fillOpacity: 1 }}
+                        />
+                    )}
                 </MapView>
             </main>
 

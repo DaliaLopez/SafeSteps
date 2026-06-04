@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useMapEvents, Polygon as LeafletPolygon, Marker } from 'react-leaflet'
 import L from 'leaflet'
-import type { LatLng } from '../../hooks/useLocations'
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
 
 const pointIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -57,7 +60,7 @@ export const DrawingOverlay = ({ onSave, onCancel }: DrawingOverlayProps) => {
         />
       )}
 
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000]">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-1000">
         <div className="bg-white rounded-2xl px-5 py-3 flex items-center gap-3 shadow-lg border border-gray-200">
           <span className="text-sm text-gray-500">
             {points.length === 0

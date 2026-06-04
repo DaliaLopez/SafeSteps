@@ -76,7 +76,7 @@ export default function LocationCard({
               Descripción
             </span>
 
-            <p className="text-[14px] leading-5 text-[#4B5563] break-words">
+            <p className="text-[14px] leading-5 text-[#4B5563] wrap-break-word">
               {location.description || "Sin descripción"}
             </p>
           </div>
