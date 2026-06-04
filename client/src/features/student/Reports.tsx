@@ -6,29 +6,54 @@ import { ReportCard } from '../../components/student/report/ReportCard';
 import type { ReportDTO } from '../../types/student.types';
 import { ReportStatus } from '../../types/student.types';
 import api from '../../services/api';
+import useSupabase from '../../hooks/useSupabase';
 
 export default function Reports() {
   const navigate = useNavigate();
   const [reports, setReports] = useState<ReportDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ReportStatus>(ReportStatus.PENDING);
+  const supabase = useSupabase();
 
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (!storedUser) return;
-        const user = JSON.parse(storedUser);
-        const { data } = await api.get(`/reports/user/${user.id}`);
-        setReports(data);
-      } catch (error) {
-        console.error("Error cargando reportes", error);
-      } finally {
-        setLoading(false);
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser) return;
+  const user = JSON.parse(storedUser);
+
+  const fetchReports = async () => {
+    try {
+      const { data } = await api.get(`/reports/user/${user.id}`);
+      setReports(data);
+    } catch (error) {
+      console.error("Error cargando reportes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchReports();
+
+  const channel = supabase
+    .channel(`user-reports-realtime-${user.id}`)
+    .on(
+      "postgres_changes",
+      { 
+        event: "UPDATE", 
+        schema: "public",
+        table: "reports", 
+        filter: `user_id=eq.${user.id}`
+      },
+      (payload) => {
+        console.log("¡El administrador cambió el estado de tu reporte!", payload);
+        fetchReports();
       }
-    };
-    fetchReports();
-  }, []);
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [supabase]);
 
   const filteredReports = reports.filter(r => r.status === activeTab);
 
