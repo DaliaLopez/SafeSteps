@@ -11,7 +11,7 @@ export enum LocationType {
 export interface Location {
     id: string;
     name: string;
-    type: LocationType; 
+    type: LocationType;
     description?: string;
 }
 

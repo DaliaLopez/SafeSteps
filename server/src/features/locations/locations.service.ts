@@ -7,10 +7,19 @@ import type { CreateLocationDTO, CheckLocationDTO } from './locations.types';
 
 export const getLocationsService = async () => {
     const result = await pool.query(
-        `SELECT * FROM locations WHERE is_deleted = false`
-    )
-    return result.rows
-}
+        `SELECT 
+            id, 
+            name, 
+            type, 
+            description,
+            ST_Y(ST_Centroid(boundary::geometry)) as latitude,
+            ST_X(ST_Centroid(boundary::geometry)) as longitude
+        FROM locations 
+        WHERE is_deleted = false`
+    );
+    
+    return result.rows;
+};
 
 // Crear una nueva zona (ej: un edificio o una rampa)
 // Aquí el admin define zonas FIJAS del sistema 
