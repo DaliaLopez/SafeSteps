@@ -2,9 +2,6 @@ import { pool } from '../../config/database';
 import Boom from '@hapi/boom';
 import type { CreateLocationDTO, CheckLocationDTO } from './locations.types';
 
-// Obtener todas las zonas registradas en el sistema
-// Esto incluye edificios, rampas, escaleras, etc. Se usa para pintar el mapa completo en el frontend
-
 export const getLocationsService = async () => {
     const result = await pool.query(
         `SELECT 
