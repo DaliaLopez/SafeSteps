@@ -8,16 +8,20 @@ import type { CreateLocationDTO, CheckLocationDTO } from './locations.types';
 export const getLocationsService = async () => {
     const result = await pool.query(
         `SELECT 
-            id, 
-            name, 
-            type, 
+            id,
+            name,
+            type,
             description,
+
+            ST_AsGeoJSON(boundary::geometry) as boundary,
+
             ST_Y(ST_Centroid(boundary::geometry)) as latitude,
             ST_X(ST_Centroid(boundary::geometry)) as longitude
-        FROM locations 
+
+        FROM locations
         WHERE is_deleted = false`
     );
-    
+
     return result.rows;
 };
 
