@@ -27,11 +27,12 @@ export const createLocationService = async (location: CreateLocationDTO) => {
     try {
         const result = await pool.query(
             `INSERT INTO locations (name, boundary, type, description)
-            VALUES ($1, $2::geography, $3, $4)
+            -- 🎯 Forzamos a que PostGIS use la proyección esférica exacta de Leaflet (4326)
+            VALUES ($1, ST_SetSRID(ST_GeomFromGeoJSON($2), 4326)::geography, $3, $4)
             RETURNING *`,
             [
                 location.name,
-                location.boundary, 
+                location.boundary, // Asegúrate de que desde el frontend le estés mandando el string GeoJSON limpio
                 location.type,  
                 location.description || null,
             ]
