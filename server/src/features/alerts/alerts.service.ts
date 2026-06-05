@@ -91,6 +91,7 @@ export const getAlertsForAccessibilityService = async () => {
     return result.rows;
 };
 
+
 // Desactivar alerta. Se usa cuando el problema YA SE SOLUCIONÓ
 //
 // Ejemplo:
