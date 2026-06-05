@@ -2,9 +2,6 @@ import { pool } from '../../config/database';
 import Boom from '@hapi/boom';
 import type { CreateLocationDTO, CheckLocationDTO } from './locations.types';
 
-// Obtener todas las zonas registradas en el sistema
-// Esto incluye edificios, rampas, escaleras, etc. Se usa para pintar el mapa completo en el frontend
-
 export const getLocationsService = async () => {
     const result = await pool.query(
         `SELECT 
@@ -26,9 +23,6 @@ export const getLocationsService = async () => {
 };
 
 
-// Crear una nueva zona (ej: un edificio o una rampa)
-// Aquí el admin define zonas FIJAS del sistema 
-
 export const createLocationService = async (location: CreateLocationDTO) => {
     try {
         const result = await pool.query(
@@ -37,8 +31,8 @@ export const createLocationService = async (location: CreateLocationDTO) => {
             RETURNING *`,
             [
                 location.name,
-                location.boundary, // polígono (área del mapa)
-                location.type,     // tipo: building, ramp, stairs, etc
+                location.boundary, 
+                location.type,  
                 location.description || null,
             ]
         );
@@ -49,10 +43,6 @@ export const createLocationService = async (location: CreateLocationDTO) => {
         throw Boom.badRequest('Error creating location');
     }
 };
-
-
-// Saber en qué zona está el usuario
-// Compara ese punto con TODOS los polígonos (locations) Si cae dentro de uno → devuelve ese lugar
 
 export const checkIfUserIsInsideService = async (
     coords: CheckLocationDTO
@@ -77,8 +67,6 @@ export const checkIfUserIsInsideService = async (
 
     return result.rows[0];
 };
-
-// Eliminar zona (solo admin)
 export const deleteLocationService = async (id: string) => {
     try {
         const result = await pool.query(
