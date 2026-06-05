@@ -5,7 +5,6 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { calculateDistanceInMetres } from '../utils/distance';
 import { createNotificationService } from '../services/accessibility.service';
 
-// 🌍 1. DICCIONARIO PARA TRADUCIR TIPOS DE OBSTÁCULOS
 const TRADUCTOR_PROBLEMAS: Record<string, string> = {
     'obstacle': 'Obstáculo en la vía',
     'damaged_stairs': 'Escaleras dañadas o en mal estado',
@@ -14,14 +13,12 @@ const TRADUCTOR_PROBLEMAS: Record<string, string> = {
     'blocked_path': 'Sendero o camino bloqueado',
 };
 
-// 🌍 2. DICCIONARIO PARA TRADUCIR NIVELES DE RIESGO
 const TRADUCTOR_RIESGO: Record<string, string> = {
     'low': 'Bajo',
     'medium': 'Medio',
     'high': 'Alto o crítico',
 };
 
-// 🌍 3. DICCIONARIO PARA TIPOS DE ZONAS FIJAS
 const TRADUCTOR_ZONAS: Record<string, string> = {
     'building': 'Edificio',
     'ramp': 'Rampa de acceso',
@@ -68,9 +65,6 @@ export const useNavigationEngine = (
                 const now = Date.now();
                 const userPoint = point([longitude, latitude]);
 
-                // ===================================================
-                // 1. DETECTAR ENTRADA/SALIDA DE EDIFICIO O ZONA FIJA
-                // ===================================================
                 let buildingFound = null;
                 let zoneFound = null;
 
