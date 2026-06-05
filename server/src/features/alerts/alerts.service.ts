@@ -41,16 +41,6 @@ export const getAlertByLocationService = async (locationId: string) => {
     return result.rows[0];
 };
 
-
-// Lista general de alertas activas
-// Para qué sirve?
-// - Accesibilidad (lector de pantalla)
-// - Mostrar todas las advertencias activas
-// - Panel general del sistema
-//
-// Ejemplo:
-// - "Bloque A → piso mojado"
-
 export const getAlertsForAccessibilityService = async () => {
     const result = await pool.query(
         `
@@ -79,21 +69,6 @@ export const getAlertsForAccessibilityService = async () => {
 
     return result.rows;
 };
-
-
-// Desactivar alerta. Se usa cuando el problema YA SE SOLUCIONÓ
-//
-// Ejemplo:
-// - ya arreglaron la rampa
-// - ya secaron el piso
-//
-// Qué hace?
-// - NO borra la alerta
-// - solo la "apaga"
-//
-// Por qué no borrar?
-// → historial
-
 
 export const deactivateAlertService = async (locationId: string) => {
     const result = await pool.query(
