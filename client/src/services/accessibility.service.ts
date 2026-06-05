@@ -1,15 +1,14 @@
 import api from './api';
 import type {CheckLocationDTO, NotificationDTO } from '../types/accessibility.types';
 
-// --- UBICACIONES ---
 
-// Obtiene todas las zonas para que el usuario pueda saber en que edificio esta 
+
 export const getLocationsService = async (): Promise<any[]> => {
     const { data } = await api.get('/locations');
     return data;
 };
 
-// Se llama constantemente mientras el usuario camina para saber si entró a un edificio o rampa
+
 export const checkIfUserIsInsideService = async (coords: CheckLocationDTO): Promise<any> => {
     const { data } = await api.post('/locations/check', coords);
     return data;
