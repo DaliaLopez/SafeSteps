@@ -44,8 +44,6 @@ export const createLocationService = async (location: CreateLocationDTO) => {
     }
 };
 
-// Compara ese punto con TODOS los polígonos (locations) Si cae dentro de uno → devuelve ese lugar
-
 export const checkIfUserIsInsideService = async (
     coords: CheckLocationDTO
 ) => {
@@ -69,8 +67,6 @@ export const checkIfUserIsInsideService = async (
 
     return result.rows[0];
 };
-
-// Eliminar zona (solo admin)
 export const deleteLocationService = async (id: string) => {
     try {
         const result = await pool.query(
