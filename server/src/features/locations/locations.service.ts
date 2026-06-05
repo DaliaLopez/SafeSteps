@@ -26,6 +26,7 @@ export const getLocationsService = async () => {
 };
 
 
+
 // Crear una nueva zona (ej: un edificio o una rampa)
 // Aquí el admin define zonas FIJAS del sistema 
 
