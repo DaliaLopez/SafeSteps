@@ -14,7 +14,6 @@ export default function ActivityHistoryPage() {
         const loadActivity = async () => {
             setLoading(true);
             try {
-                // Traemos tanto los aprobados como los pendientes para ver la actividad total
                 const [approved, pending] = await Promise.all([
                     getApprovedReportsService(),
                     getPendingReportsService()
@@ -22,7 +21,6 @@ export default function ActivityHistoryPage() {
 
                 const allActivity = [...approved, ...pending];
 
-                // Ordenar por fecha (asumiendo que tienen un campo created_at)
                 const sorted = allActivity.sort((a, b) =>
                     new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
                 );
