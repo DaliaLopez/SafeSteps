@@ -1,11 +1,6 @@
 import { pool } from '../../config/database';
 import type { CreateAlertDTO } from './alerts.types';
 
-// Crear alerta manual (ADMIN) Es cuando el admin detecta algo directamente
-// - "Rampa en mantenimiento"
-
-// IMPORTANTE: Las alertas son el “estado real del sistema” (lo que el usuario FINAL debe escuchar/ver)
-
 export const createAlertService = async (alert: CreateAlertDTO) => {
     const result = await pool.query(
         `
@@ -28,19 +23,6 @@ export const createAlertService = async (alert: CreateAlertDTO) => {
 
     return result.rows[0];
 };
-
-
-// Se usa cuando el usuario entra a una zona (location)
-// Ejemplo: el usuario entra a "Bloque A"
-//
-// Qué hace?
-// 1. Busca alertas de ese lugar
-// 2. Filtra SOLO las activas (is_active = true)
-// 3. Devuelve la MÁS RECIENTE
-//
-// Para qué sirve?
-// Para decirle al usuario:
-// "Cuidado, hay un problema aquí"
 
 export const getAlertByLocationService = async (locationId: string) => {
     const result = await pool.query(
