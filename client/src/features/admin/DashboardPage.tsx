@@ -46,12 +46,15 @@ export default function DashboardPage() {
 
   return (
     <div className="relative h-screen w-screen flex flex-col overflow-hidden">
+
       <Header />
 
       <div className="flex-1 relative">
+
         <MapView center={CAMPUS_CENTER}>
           <ReportMarkers reports={reports} />
         </MapView>
+        
       </div>
 
       <NavbarAdmin />

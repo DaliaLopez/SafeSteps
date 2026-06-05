@@ -57,7 +57,7 @@ export default function AddZonePage() {
         description: description || undefined,
       });
 
-      alert("🎉 ¡Zona creada con éxito!");
+      alert("¡Zona creada con éxito!");
       navigate("/admin/dashboard"); 
     } catch (error) {
       console.error(error);
@@ -68,19 +68,28 @@ export default function AddZonePage() {
   };
 
   return (
+
     <div className="min-h-screen bg-[#F9FAF7] pb-12">
+
       <header className="p-6 max-w-md mx-auto flex items-center gap-4 bg-[#F9FAF7]">
+
         <button
           onClick={() => navigate(-1)}
           className="p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm border border-gray-100 transition active:scale-95"
         >
+
           <ArrowLeft size={22} className="text-gray-800" />
+
         </button>
+
         <h2 className="text-2xl font-bold text-black">Agregar zona</h2>
+
       </header>
 
       <main className="max-w-md mx-auto px-6 space-y-6">
+
         <div className="bg-white p-4 rounded-[40px] shadow-sm border border-gray-50 overflow-hidden">
+
           <div className="w-full h-80 rounded-[30px] overflow-hidden relative shadow-inner">
             <MapContainer
               center={[3.341, -76.530]}
@@ -114,11 +123,14 @@ export default function AddZonePage() {
                     }}
                   >
                     <Popup>
+
                       <div className="p-1 text-xs">
                         <p className="font-bold text-gray-900">🏢 {zone.name}</p>
                         <p className="text-gray-500 text-[10px]">Tipo: {zone.type}</p>
                       </div>
+
                     </Popup>
+
                   </ExistingPolygon>
                 );
               })}
@@ -138,26 +150,33 @@ export default function AddZonePage() {
                 }}
               />
             </MapContainer>
+
           </div>
+
         </div>
 
         {showMapSuccessNotice && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-emerald-800 animate-fade-in flex flex-col gap-1">
+            
             <span className="font-bold text-sm flex items-center gap-2">
               ¡Estructura del mapa delimitada!
             </span>
+
             <span className="text-xs text-emerald-700">
               Por favor, completa los campos de texto que aparecen abajo para registrar el nombre y tipo de zona en el campus.
             </span>
+
           </div>
         )}
 
         <div ref={formSectionRef} className="space-y-6 transition-all">
           
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+
             <h3 className="mb-3 font-medium text-gray-700 text-sm">
               Nombre de la zona
             </h3>
+
             <input
               type="text"
               placeholder="Ej: Zona de construcción bloque B"
@@ -165,6 +184,7 @@ export default function AddZonePage() {
               onChange={(e) => setZoneName(e.target.value)}
               className="w-full p-4 rounded-2xl bg-[#F7F7F5] outline-none text-sm border-none focus:ring-1 focus:ring-blue-500"
             />
+
           </div>
 
           <LocationTypeSelector
@@ -176,6 +196,7 @@ export default function AddZonePage() {
             value={description}
             onChange={setDescription}
           />
+
         </div>
 
         <button
@@ -185,7 +206,11 @@ export default function AddZonePage() {
         >
           {isSaving ? "Guardando estructura..." : "Registrar zona"}
         </button>
+
       </main>
+
     </div>
+
   );
+  
 }
