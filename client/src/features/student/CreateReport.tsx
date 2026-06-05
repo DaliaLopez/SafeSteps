@@ -53,15 +53,23 @@ export default function CreateReport() {
   };
 
   return (
+
     <div className="min-h-screen bg-[#F9F9F7]">
+
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
+
         <button onClick={() => navigate('/student/dashboard')} className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform">
+          
           <ArrowLeft size={22} className="text-gray-800" />
+
         </button>
+
         <h2 className="text-2xl font-bold text-black">Nuevo reporte</h2>
+
       </header>
 
       <main className="px-8 space-y-6 max-w-md mx-auto h-full pb-325">
+
         <LocationSelector
           onSelect={(loc) => setFormData({ ...formData, location: loc })}
           locationName={formData.location_name} 
@@ -85,6 +93,7 @@ export default function CreateReport() {
       </main>
 
       <div className="fixed bottom-8 left-0 right-0 px-6 z-50">
+
         <button
           onClick={handleSend}
           disabled={loading || !formData.location}
@@ -113,7 +122,11 @@ export default function CreateReport() {
             </>
           )}
         </button>
+
       </div>
+
     </div>
+
   );
+  
 }

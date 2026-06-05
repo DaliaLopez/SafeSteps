@@ -20,6 +20,7 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+
         const fetchAdminStats = async () => {
             try {
                 const [locations, pending, approved] = await Promise.all([
@@ -44,13 +45,16 @@ export default function ProfilePage() {
     }, []);
 
     return (
+
         <div className="min-h-screen pb-10">
+
             <ProfileHeader title="Perfil" />
 
             <main className="max-w-md mx-auto px-6 space-y-6">
                 <UserCard name={user?.name} email={user?.email} role="admin" />
 
                 <section className="grid grid-cols-2 gap-3">
+
                     <StatCard
                         label="Zonas creadas"
                         value={stats.zonas}
@@ -58,6 +62,7 @@ export default function ProfilePage() {
                         colorClass="text-blue-500"
                         bgClass="bg-blue-50"
                     />
+
                     <StatCard
                         label="Alertas activas"
                         value={stats.alertas}
@@ -65,6 +70,7 @@ export default function ProfilePage() {
                         colorClass="text-orange-500"
                         bgClass="bg-orange-50"
                     />
+
                     <StatCard
                         label="Reportes Pendientes"
                         value={stats.pendientes}
@@ -72,6 +78,7 @@ export default function ProfilePage() {
                         colorClass="text-purple-500"
                         bgClass="bg-purple-50"
                     />
+
                     <StatCard
                         label="Aprobaciones"
                         value={stats.aprobados}
@@ -79,6 +86,7 @@ export default function ProfilePage() {
                         colorClass="text-green-500"
                         bgClass="bg-green-50"
                     />
+
                     <StatCard
                         label="Rechazos"
                         value={stats.rechazados}
@@ -86,11 +94,14 @@ export default function ProfilePage() {
                         colorClass="text-red-500"
                         bgClass="bg-red-50"
                     />
+
                 </section>
 
                 <div className="space-y-3">
+
                     <MenuOption label="Editar perfil" icon={<User size={18} />} path="/admin/profile/edit" />
                     <MenuOption label="Actividad reciente" icon={<Activity size={18} />} path="/admin/activity" />
+
                 </div>
 
                 <button
@@ -100,7 +111,10 @@ export default function ProfilePage() {
                     <LogOut size={22} />
                     Cerrar sesión
                 </button>
+
             </main>
+
         </div>
+        
     );
 }
