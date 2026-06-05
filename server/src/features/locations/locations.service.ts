@@ -31,8 +31,8 @@ export const createLocationService = async (location: CreateLocationDTO) => {
             RETURNING *`,
             [
                 location.name,
-                location.boundary, // polígono (área del mapa)
-                location.type,     // tipo: building, ramp, stairs, etc
+                location.boundary, 
+                location.type,  
                 location.description || null,
             ]
         );
@@ -44,8 +44,6 @@ export const createLocationService = async (location: CreateLocationDTO) => {
     }
 };
 
-
-// Saber en qué zona está el usuario
 // Compara ese punto con TODOS los polígonos (locations) Si cae dentro de uno → devuelve ese lugar
 
 export const checkIfUserIsInsideService = async (
