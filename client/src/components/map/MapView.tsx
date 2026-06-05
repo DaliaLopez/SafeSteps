@@ -63,7 +63,7 @@ export const MapView = ({ center, zoom = 17, children }: MapViewProps) => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 2000,
         maximumAge: 0
       }
     )

@@ -200,7 +200,7 @@ export const useNavigationEngine = (
             (error) => console.error("Error obteniendo coordenadas:", error),
             {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 2000,
                 maximumAge: 0,
             }
         );
