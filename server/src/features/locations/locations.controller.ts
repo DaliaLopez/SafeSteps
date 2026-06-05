@@ -76,6 +76,7 @@ export const checkLocationController = async (
     }
 };
 
+
 // Eliminar zona (solo admin)
 export const deleteLocationController = async (
     req: Request,
