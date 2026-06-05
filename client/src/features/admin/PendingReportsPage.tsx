@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from "lucide-react";
-import { CheckCircle, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
 import { ReportCard } from '../../components/student/report/ReportCard'
 import {
   getPendingReportsService,
@@ -10,18 +9,46 @@ import {
 import { ReportStatus } from '../../types/admin.types'
 import type { ReportDTO } from '../../types/admin.types'
 
+import useSupabase from '../../hooks/useSupabase'
+
 export default function PendingReportsPage() {
   const navigate = useNavigate()
   const [reports, setReports] = useState<ReportDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
+  
+  const supabase = useSupabase()
 
-  useEffect(() => {
+  const fetchPendingReports = useCallback(() => {
     getPendingReportsService()
       .then(setReports)
       .catch((err: unknown) => console.error('Error cargando reportes:', err))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchPendingReports()
+
+    const channel = supabase
+      .channel('admin-pending-reports')
+      .on(
+        'postgres_changes',
+        { 
+          event: '*',
+          schema: 'public', 
+          table: 'reports' 
+        },
+        (payload) => {
+          console.log('Nuevo cambio en reportes:', payload)
+          fetchPendingReports()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [fetchPendingReports, supabase])
 
   const handleStatus = async (id: string, status: ReportStatus.APPROVED | ReportStatus.REJECTED) => {
     setUpdating(id)
@@ -37,7 +64,6 @@ export default function PendingReportsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-
       <header className="px-8 pt-8 py-6 flex items-center gap-4">
         <button
           onClick={() => navigate('/admin/dashboard')}
@@ -45,20 +71,22 @@ export default function PendingReportsPage() {
         >
           <ArrowLeft size={22} className="text-gray-800" />
         </button>
-        <h2 className="text-2xl font-bold text-black">
-          Reportes pendientes
+        <h2 className="text-2xl font-bold text-[#1E293B]">
+          Reportes Pendientes
         </h2>
       </header>
- 
-      <div className="flex-1 py-4 overflow-y-auto">
+
+      <main className="max-w-4xl mx-auto px-4 pb-20 w-full flex-1">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 animate-pulse" />
+          <div className="flex justify-center items-center h-64">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : reports.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="text-4xl">✅</div>
-            <p className="text-gray-500 font-medium">Sin reportes pendientes</p>
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <div className="bg-green-100 p-4 rounded-full mb-4">
+              <CheckCircle size={32} className="text-green-500" />
+            </div>
+            <h3 className="text-gray-900 font-semibold mb-1">Todo al día</h3>
             <p className="text-gray-400 text-sm">Todos los reportes han sido revisados</p>
           </div>
         ) : (
@@ -88,8 +116,7 @@ export default function PendingReportsPage() {
             </div>
           ))
         )}
-      </div>
-
+      </main>
     </div>
   )
 }
