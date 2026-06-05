@@ -56,6 +56,7 @@ export default function Header() {
     }, []);
 
     return (
+
         <header className="bg-blue-600 text-white p-8 pb-8 pt-12 rounded-b-[40px] shadow-md relative overflow-hidden">
             <div className="absolute right-1 top-2 w-40 h-40">
                 <img
@@ -106,8 +107,13 @@ export default function Header() {
                         )}
 
                     </div>
+
                 </div>
+
             </div>
+
         </header>
+
     );
+    
 }

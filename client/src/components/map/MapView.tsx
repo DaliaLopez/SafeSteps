@@ -72,6 +72,7 @@ export const MapView = ({ center, zoom = 17, children }: MapViewProps) => {
   }, [])
 
   return (
+
     <MapContainer
       center={center}
       zoom={zoom}
@@ -97,5 +98,7 @@ export const MapView = ({ center, zoom = 17, children }: MapViewProps) => {
 
       {children}
     </MapContainer>
+
   )
+  
 }

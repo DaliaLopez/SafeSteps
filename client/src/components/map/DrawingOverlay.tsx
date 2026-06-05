@@ -34,6 +34,7 @@ export const DrawingOverlay = ({ onSave, onCancel }: DrawingOverlayProps) => {
   }
 
   return (
+
     <>
       {points.length >= 3 && (
         <LeafletPolygon
@@ -113,7 +114,11 @@ export const DrawingOverlay = ({ onSave, onCancel }: DrawingOverlayProps) => {
             </button>
           )}
         </div>
+
       </div>
+
     </>
+
   )
+  
 }

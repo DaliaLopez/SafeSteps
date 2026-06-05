@@ -24,6 +24,7 @@ export const ZoneFormFields = ({
   setDescription,
 }: ZoneFormFieldsProps) => {
   return (
+
     <>
       <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
         <h2 className="text-base font-semibold text-gray-800 mb-3">Tipo</h2>
@@ -62,5 +63,7 @@ export const ZoneFormFields = ({
         />
       </div>
     </>
+
   )
+  
 }

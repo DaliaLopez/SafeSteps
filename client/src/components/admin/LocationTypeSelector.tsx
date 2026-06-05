@@ -19,7 +19,7 @@ const locationOptions = [
   {
     value: LocationType.STAIRS,
     label: "Escaleras",
-    icon: "🪜",
+    icon: "🚶‍♂️",
   },
   {
     value: LocationType.BATHROOM,
@@ -86,5 +86,5 @@ export default function LocationTypeSelector({
       </div>
     </div>
   );
-  
+
 }
