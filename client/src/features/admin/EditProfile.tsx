@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { updateProfileService } from '../../services/student.service';
 
 export default function EditProfile() {
+
   const navigate = useNavigate();
   const { user, updateUserContext } = useAuth();
 
@@ -38,40 +39,58 @@ export default function EditProfile() {
 
       alert('Perfil actualizado correctamente');
       navigate(-1);
+
     } catch (error: any) {
       console.error(error);
       alert(error.response?.data?.message || 'Error al actualizar el perfil');
+
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
+
     <div className="min-h-screen pb-8">
+
       <header className="px-8 pt-8 pb-6 flex items-center gap-4">
+
         <button
           onClick={() => navigate(-1)}
           className="p-3 bg-white rounded-full shadow-sm active:scale-90 transition-transform border border-gray-100"
         >
+
           <ArrowLeft size={22} className="text-gray-800" />
+
         </button>
+
         <h2 className="text-2xl font-bold text-[#1E293B]">Editar perfil</h2>
+
       </header>
 
       <main className="px-8 max-w-md mx-auto">
+
         <div className="flex flex-col items-center mb-8 text-center gap-2">
+
           <div className="w-20 h-20 rounded-full bg-[#296BFF] flex items-center justify-center shadow-xl shadow-blue-100">
             <User size={40} strokeWidth={1.5} className="text-white" />
           </div>
+
           <h3>{user?.name}</h3>
+
           <div className="px-4 py-1 bg-[#E0EBFF] text-[#2563EB] rounded-full text-xs">
             {user?.role}
           </div>
+
         </div>
 
         <div className="space-y-2">
+
           <div className="relative focus-within:border-[#296BFF] transition-colors gap-4">
+
             <label className="text-[#364153] font-semibold text-[15px]">Nombre completo</label>
+
             <input
               type="text"
               value={formData.name}
@@ -82,7 +101,9 @@ export default function EditProfile() {
           </div>
 
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
+
             <label className="text-[#364153] font-semibold text-[15px]">Email</label>
+
             <input
               type="email"
               value={formData.email}
@@ -92,9 +113,13 @@ export default function EditProfile() {
             />
           </div>
 
+
           <div className="relative py-2 focus-within:border-[#296BFF] transition-colors">
+
             <label className="text-[#364153] font-semibold text-[15px]">Nueva contraseña</label>
+
             <div className="flex items-center w-full p-3 bg-white rounded-2xl text-xs border-none focus:ring-1 focus:ring-blue-500 outline-none">
+              
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
@@ -102,15 +127,20 @@ export default function EditProfile() {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="text-gray-400"
               >
+
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+
             </div>
+
           </div>
+
         </div>
 
         <button
@@ -120,7 +150,10 @@ export default function EditProfile() {
         >
           {loading ? 'Guardando...' : 'Guardar cambios'}
         </button>
+
       </main>
+
     </div>
+    
   );
 }
