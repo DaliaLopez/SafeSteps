@@ -1,91 +1,216 @@
 import { useEffect, useRef, useState } from 'react';
+import { point } from '@turf/helpers';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+
 import { calculateDistanceInMetres } from '../utils/distance';
 import { createNotificationService } from '../services/accessibility.service';
 
 export const useNavigationEngine = (
     userId: string | undefined,
-    locations: any[], 
-    activeAlerts: any[], 
+    locations: any[],
+    activeAlerts: any[],
     alertDistanceSetting: number
 ) => {
-    const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number } | null>(null);
-    
-    // Rastreo de zonas actuales (¿en qué edificio estoy?)
-    const currentZoneId = useRef<string | null>(null);
-    // Rastreo de alertas (historial de notificaciones por alerta)
-    const notifiedAlerts = useRef<Record<string, number>>({});
+    const [currentLocation, setCurrentLocation] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+
+    const currentBuilding = useRef<string | null>(null);
+
+    const notifiedItems = useRef<Record<string, number>>({});
+
+    const speak = (text: string) => {
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+
+        window.speechSynthesis.speak(utterance);
+    };
 
     useEffect(() => {
         if (!navigator.geolocation) return;
 
         const watchId = navigator.geolocation.watchPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentLocation({ lat: latitude, lng: longitude });
+            async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                setCurrentLocation({
+                    lat: latitude,
+                    lng: longitude,
+                });
+
                 const now = Date.now();
 
-                // 1. LÓGICA DE ZONAS (Entrada y Salida)
-                let zoneFound = locations.find(loc => 
-                    calculateDistanceInMetres(latitude, longitude, loc.latitude, loc.longitude) <= 30 // Rango de zona (ej: 30m)
-                );
+                // ==========================
+                // DETECTAR EDIFICIO
+                // ==========================
 
-                if (zoneFound && currentZoneId.current !== zoneFound.id) {
-                    currentZoneId.current = zoneFound.id;
-                    const mensaje = `Has ingresado al ${zoneFound.name}.`;
-                    
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
-                } else if (!zoneFound && currentZoneId.current !== null) {
-                    currentZoneId.current = null;
-                    const mensaje = `Has salido de la zona.`;
-                    
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
+                const userPoint = point([longitude, latitude]);
+
+                const buildingFound = locations.find((loc) => {
+                    if (loc.type !== 'building') return false;
+
+                    try {
+                        const polygon = JSON.parse(loc.boundary);
+
+                        return booleanPointInPolygon(
+                            userPoint,
+                            polygon
+                        );
+                    } catch {
+                        return false;
+                    }
+                });
+
+                if (
+                    buildingFound &&
+                    currentBuilding.current !== buildingFound.id
+                ) {
+                    currentBuilding.current = buildingFound.id;
+
+                    speak(
+                        `Has ingresado al ${buildingFound.name}`
+                    );
                 }
 
-                // 2. LÓGICA DE ALERTAS Y ZONAS FIJAS (Escaleras, Ascensores, Peligros)
-                // Estos notifican CADA VEZ que el usuario se acerca, sin importar si está en un edificio
-                activeAlerts.forEach((item) => {
-                    const dist = calculateDistanceInMetres(latitude, longitude, item.latitude, item.longitude);
-                    
-                    if (dist <= alertDistanceSetting) {
-                        const lastNotified = notifiedAlerts.current[item.id] || 0;
-                        
-                        // Si el usuario vuelve a pasar cerca, volvemos a notificar (cada 2 minutos)
-                        if (now - lastNotified > 120000) {
-                            notifiedAlerts.current[item.id] = now;
+                if (
+                    !buildingFound &&
+                    currentBuilding.current
+                ) {
+                    const previousBuilding = locations.find(
+                        (l) => l.id === currentBuilding.current
+                    );
 
-                            let mensaje = "";
-                            // Si es una alerta de reporte (tiene description)
-                            if (item.description && !['building', 'stairs', 'elevator', 'bathroom'].includes(item.type)) {
-                                mensaje = `¡Precaución! ${item.description}.`;
-                            } else {
-                                // Si es una zona fija
-                                switch (item.type) {
-                                    case 'stairs': mensaje = `Estás cerca de una escalera.`; break;
-                                    case 'elevator': mensaje = `Estás cerca de un ascensor.`; break;
-                                    case 'bathroom': mensaje = `Estás cerca de un baño.`; break;
-                                    default: mensaje = `Estás cerca de ${item.location_name}.`;
-                                }
+                    if (previousBuilding) {
+                        speak(
+                            `Has salido de ${previousBuilding.name}`
+                        );
+                    }
+
+                    currentBuilding.current = null;
+                }
+
+                // ==========================
+                // ESCALERAS, ASCENSORES, BAÑOS
+                // ==========================
+
+                locations.forEach((loc) => {
+                    if (
+                        ![
+                            'stairs',
+                            'elevator',
+                            'bathroom'
+                        ].includes(loc.type)
+                    ) {
+                        return;
+                    }
+
+                    const distance =
+                        calculateDistanceInMetres(
+                            latitude,
+                            longitude,
+                            Number(loc.latitude),
+                            Number(loc.longitude)
+                        );
+
+                    if (distance <= alertDistanceSetting) {
+                        const last =
+                            notifiedItems.current[loc.id] || 0;
+
+                        if (now - last > 30000) {
+                            notifiedItems.current[loc.id] = now;
+
+                            let message = '';
+
+                            switch (loc.type) {
+                                case 'stairs':
+                                    message =
+                                        'Estás cerca de una escalera';
+                                    break;
+
+                                case 'elevator':
+                                    message =
+                                        'Estás cerca de un ascensor';
+                                    break;
+
+                                case 'bathroom':
+                                    message =
+                                        'Estás cerca de un baño';
+                                    break;
                             }
 
-                            window.speechSynthesis.cancel();
-                            window.speechSynthesis.speak(new SpeechSynthesisUtterance(mensaje));
-                            if (window.navigator.vibrate) window.navigator.vibrate([300, 100, 300]);
-                            
-                            if (userId && item.id.length > 5) { // Evita notificar puntos fijos como alertas
-                                createNotificationService({ user_id: userId, alert_id: item.id }).catch(console.error);
+                            speak(message);
+                        }
+                    }
+                });
+
+                // ==========================
+                // ALERTAS ACTIVAS
+                // ==========================
+
+                activeAlerts.forEach(async (alert) => {
+                    const distance =
+                        calculateDistanceInMetres(
+                            latitude,
+                            longitude,
+                            Number(alert.latitude),
+                            Number(alert.longitude)
+                        );
+
+                    if (distance <= alertDistanceSetting) {
+                        const last =
+                            notifiedItems.current[
+                                `alert-${alert.id}`
+                            ] || 0;
+
+                        if (now - last > 30000) {
+                            notifiedItems.current[
+                                `alert-${alert.id}`
+                            ] = now;
+
+                            speak(
+                                `Precaución. ${alert.description}`
+                            );
+
+                            if (
+                                window.navigator.vibrate
+                            ) {
+                                window.navigator.vibrate([
+                                    300,
+                                    100,
+                                    300,
+                                ]);
+                            }
+
+                            if (userId) {
+                                createNotificationService({
+                                    user_id: userId,
+                                    alert_id: alert.id,
+                                }).catch(console.error);
                             }
                         }
                     }
                 });
             },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, maximumAge: 0 }
+            console.error,
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+            }
         );
 
-        return () => navigator.geolocation.clearWatch(watchId);
-    }, [locations, activeAlerts, alertDistanceSetting, userId]);
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, [
+        userId,
+        locations,
+        activeAlerts,
+        alertDistanceSetting,
+    ]);
 
     return { currentLocation };
 };
