@@ -1,10 +1,6 @@
 import { pool } from '../../config/database';
 import type { CreateAlertDTO } from './alerts.types';
 
-// Crear alerta manual (ADMIN) Es cuando el admin detecta algo directamente
-// - "Rampa en mantenimiento"
-
-// IMPORTANTE: Las alertas son el “estado real del sistema” (lo que el usuario FINAL debe escuchar/ver)
 
 export const createAlertService = async (alert: CreateAlertDTO) => {
     const result = await pool.query(
@@ -29,19 +25,6 @@ export const createAlertService = async (alert: CreateAlertDTO) => {
     return result.rows[0];
 };
 
-
-// Se usa cuando el usuario entra a una zona (location)
-// Ejemplo: el usuario entra a "Bloque A"
-//
-// Qué hace?
-// 1. Busca alertas de ese lugar
-// 2. Filtra SOLO las activas (is_active = true)
-// 3. Devuelve la MÁS RECIENTE
-//
-// Para qué sirve?
-// Para decirle al usuario:
-// "Cuidado, hay un problema aquí"
-
 export const getAlertByLocationService = async (locationId: string) => {
     const result = await pool.query(
         `SELECT a.id, a.message, l.name as building_name
@@ -59,15 +42,6 @@ export const getAlertByLocationService = async (locationId: string) => {
     return result.rows[0];
 };
 
-
-// Lista general de alertas activas
-// Para qué sirve?
-// - Accesibilidad (lector de pantalla)
-// - Mostrar todas las advertencias activas
-// - Panel general del sistema
-//
-// Ejemplo:
-// - "Bloque A → piso mojado"
 
 export const getAlertsForAccessibilityService = async () => {
     const result = await pool.query(
@@ -93,20 +67,6 @@ export const getAlertsForAccessibilityService = async () => {
 
     return result.rows;
 };
-
-// Desactivar alerta. Se usa cuando el problema YA SE SOLUCIONÓ
-//
-// Ejemplo:
-// - ya arreglaron la rampa
-// - ya secaron el piso
-//
-// Qué hace?
-// - NO borra la alerta
-// - solo la "apaga"
-//
-// Por qué no borrar?
-// → historial
-
 
 export const deactivateAlertService = async (locationId: string) => {
     const result = await pool.query(
