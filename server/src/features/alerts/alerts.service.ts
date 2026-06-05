@@ -74,19 +74,16 @@ export const getAlertsForAccessibilityService = async () => {
         `
         SELECT
             a.id,
+            a.location_id,     -- <---- ¡AÑADE ESTA LÍNEA!
             a.message as description,
             a.latitude,
             a.longitude,
-
             l.name as location_name,
             l.type
-
         FROM alerts a
         JOIN locations l
             ON l.id = a.location_id
-
         WHERE a.is_active = true
-
         ORDER BY l.name ASC
         `
     );
