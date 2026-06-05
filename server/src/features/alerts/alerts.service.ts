@@ -74,15 +74,21 @@ export const getAlertsForAccessibilityService = async () => {
         `
         SELECT
             a.id,
-            a.location_id,     -- <---- ¡AÑADE ESTA LÍNEA!
+            a.location_id,
             a.message as description,
             a.latitude,
             a.longitude,
             l.name as location_name,
-            l.type
+            l.type,
+            -- Traemos los campos del reporte (si existe)
+            r.problem_type,
+            r.danger_level
         FROM alerts a
         JOIN locations l
             ON l.id = a.location_id
+        -- Hacemos LEFT JOIN por si es una alerta manual del admin que no tiene reporte
+        LEFT JOIN reports r 
+            ON a.report_id = r.id
         WHERE a.is_active = true
         ORDER BY l.name ASC
         `
