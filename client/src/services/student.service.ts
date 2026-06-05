@@ -11,19 +11,12 @@ export const getAlertByLocationService = async (locationId: string): Promise<any
     return data;
 };
 
-// --- REPORTES ---
 
-// Permite al estudiante reportar un obstáculo o falla (ej. rampa bloqueada).
 
 export const createReportService = async (reportDTO: CreateReportDTO): Promise<ReportDTO> => {
     const { data } = await api.post<ReportDTO>('/reports', reportDTO);
     return data;
 };
-
-// --- NOTIFICACIONES (HISTORIAL) ---
-
-// Trae todas las alertas que el estudiante ha recibido (historial personal).
-
 export const getUserNotificationHistoryService = async (userId: string): Promise<NotificationDTO[]> => {
     const { data } = await api.get<NotificationDTO[]>(`/notifications/user/${userId}`);
     return data;
