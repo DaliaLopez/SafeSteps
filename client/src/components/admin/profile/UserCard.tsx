@@ -5,6 +5,7 @@ interface UserCardProps {
 }
 
 export const UserCard = ({ name, email, role }: UserCardProps) => (
+
     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 flex items-center gap-4">
 
         <div className="w-16 h-16 bg-[#296BFF] rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-100 shrink-0">
@@ -20,4 +21,5 @@ export const UserCard = ({ name, email, role }: UserCardProps) => (
             </span>
         </div>
     </div>
+    
 );

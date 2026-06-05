@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const ProfileHeader = ({ title }: { title: string }) => {
     const navigate = useNavigate();
+    
     return (
         <header className="px-8 pt-8 py-6 flex items-center gap-4">
             <button 

@@ -12,7 +12,9 @@ export default function AdminReportCard({
   report,
   onResolve,
 }: AdminReportCardProps) {
+  
   return (
+
     <div>
       <ReportCard report={report} />
 
@@ -27,5 +29,6 @@ export default function AdminReportCard({
         </button>
       </div>
     </div>
+
   );
 }

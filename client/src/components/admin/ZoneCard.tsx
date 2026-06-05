@@ -27,6 +27,7 @@ export default function LocationCard({
   onDelete,
 }: LocationCardProps) {
   return (
+
     <div className="bg-white rounded-2xl px-5 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)] mb-5">
 
       <div className="flex flex-col gap-5">
@@ -93,5 +94,6 @@ export default function LocationCard({
         Eliminar zona
       </button>
     </div>
+    
   );
 }

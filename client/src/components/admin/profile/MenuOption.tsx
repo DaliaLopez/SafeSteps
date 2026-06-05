@@ -9,6 +9,7 @@ interface Props {
 
 export const MenuOption = ({ label, icon, path }: Props) => {
   const navigate = useNavigate();
+
   return (
     <button 
       onClick={() => navigate(path)}
@@ -22,5 +23,6 @@ export const MenuOption = ({ label, icon, path }: Props) => {
       </div>
       <ChevronRight size={18} className="text-gray-300" />
     </button>
+    
   );
 };

@@ -1,4 +1,5 @@
 export const SpeedSelector = ({ selected, onSelect }: { selected: string, onSelect: (s: string) => void }) => (
+
     <div className="space-y-4">
         <span className="text-[#1E293B] font-semibold block ml-1">Velocidad de voz</span>
         <div className="grid grid-cols-3 gap-3">
@@ -16,4 +17,5 @@ export const SpeedSelector = ({ selected, onSelect }: { selected: string, onSele
             ))}
         </div>
     </div>
+    
 );

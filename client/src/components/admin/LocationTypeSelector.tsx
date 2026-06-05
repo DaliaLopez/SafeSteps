@@ -47,7 +47,9 @@ export default function LocationTypeSelector({
   selectedType,
   onSelect,
 }: LocationTypeSelectorProps) {
+
   return (
+
     <div className="w-full">
       <h2 className="text-lg font-semibold text-gray-800 mb-3">
         Tipo de zona
@@ -84,4 +86,5 @@ export default function LocationTypeSelector({
       </div>
     </div>
   );
+  
 }
