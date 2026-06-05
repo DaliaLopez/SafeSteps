@@ -59,7 +59,7 @@ export const checkLocationController = async (
     next: NextFunction
 ) => {
     try {
-        const { latitude, longitude } = req.query;
+        const { latitude, longitude } = req.body;
 
         if (!latitude || !longitude) {
             throw Boom.badRequest('latitude and longitude are required');
@@ -75,6 +75,7 @@ export const checkLocationController = async (
         next(error);
     }
 };
+
 
 // Eliminar zona (solo admin)
 export const deleteLocationController = async (

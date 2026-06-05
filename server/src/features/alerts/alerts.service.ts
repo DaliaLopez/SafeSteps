@@ -8,10 +8,22 @@ import type { CreateAlertDTO } from './alerts.types';
 
 export const createAlertService = async (alert: CreateAlertDTO) => {
     const result = await pool.query(
-        `INSERT INTO alerts (location_id, message)
-        VALUES ($1, $2)
-        RETURNING *`,
-        [alert.location_id, alert.message]
+        `
+        INSERT INTO alerts (
+            location_id,
+            message,
+            latitude,
+            longitude
+        )
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+        `,
+        [
+            alert.location_id,
+            alert.message,
+            alert.latitude ?? null,
+            alert.longitude ?? null
+        ]
     );
 
     return result.rows[0];
@@ -59,17 +71,24 @@ export const getAlertByLocationService = async (locationId: string) => {
 
 export const getAlertsForAccessibilityService = async () => {
     const result = await pool.query(
-        `SELECT 
-            a.id, 
-            a.message as description, 
-            l.name as location_name, 
-            l.type,
-            ST_Y(ST_Centroid(l.boundary::geometry)) as latitude,
-            ST_X(ST_Centroid(l.boundary::geometry)) as longitude
+        `
+        SELECT
+            a.id,
+            a.message as description,
+            a.latitude,
+            a.longitude,
+
+            l.name as location_name,
+            l.type
+
         FROM alerts a
-        JOIN locations l ON a.location_id = l.id
+        JOIN locations l
+            ON l.id = a.location_id
+
         WHERE a.is_active = true
-        ORDER BY l.name ASC`
+
+        ORDER BY l.name ASC
+        `
     );
 
     return result.rows;

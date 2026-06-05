@@ -108,23 +108,39 @@ export const updateReportStatusService = async (
 // Convierte un reporte aprobado en una ALERTA REAL
 export const promoteReportToAlertService = async (reportId: string) => {
     const result = await pool.query(
-        `INSERT INTO alerts (location_id, message)
-        SELECT l.id, r.description
-        FROM reports r, locations l
+        `
+        INSERT INTO alerts (
+            location_id,
+            message,
+            latitude,
+            longitude
+        )
+        SELECT
+            (
+                SELECT id
+                FROM locations l
+                ORDER BY ST_Distance(
+                    l.boundary,
+                    r.location
+                ) ASC
+                LIMIT 1
+            ),
+            r.description,
+
+            ST_Y(r.location::geometry),
+            ST_X(r.location::geometry)
+
+        FROM reports r
         WHERE r.id = $1
-        AND r.status = 'Aprobado' 
-        AND ST_Intersects(l.boundary, r.location)
-        RETURNING *`,
+        AND r.status = 'Aprobado'
+
+        RETURNING *
+        `,
         [reportId]
     );
 
-    // 1. Toma el reporte
-    // 2. Encuentra en qué zona cae
-    // 3. Crea una alerta en esa zona
-
     return result.rows[0];
 };
-
 // Si ya no hay el problema en ese punto resuelve el problema 
 export const resolveReportService = async (reportId: string) => {
     try {
@@ -136,14 +152,15 @@ export const resolveReportService = async (reportId: string) => {
 
         // 2. apagar la alerta asociada
         await pool.query(
-            `UPDATE alerts 
-            SET is_active = false
-            WHERE location_id IN (
-                SELECT l.id
-                FROM reports r, locations l
-                WHERE r.id = $1
-                AND ST_Intersects(l.boundary, r.location)
-            )`,
+            `
+UPDATE alerts
+SET is_active = false
+WHERE id IN (
+    SELECT a.id
+    FROM alerts a
+    WHERE a.report_id = $1
+)
+`,
             [reportId]
         );
 

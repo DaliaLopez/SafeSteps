@@ -1,95 +1,216 @@
 import { useEffect, useRef, useState } from 'react';
+import { point } from '@turf/helpers';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+
 import { calculateDistanceInMetres } from '../utils/distance';
 import { createNotificationService } from '../services/accessibility.service';
 
 export const useNavigationEngine = (
     userId: string | undefined,
-    locations: any[], // Zonas normales (Edificios, escaleras)
-    activeAlerts: any[], // Peligros reportados
+    locations: any[],
+    activeAlerts: any[],
     alertDistanceSetting: number
 ) => {
-    const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number } | null>(null);
-    
-    // Memoria plana anti-spam (guarda IDs de zonas y alertas)
-    const notifiedHistory = useRef<Record<string, number>>({});
+    const [currentLocation, setCurrentLocation] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+
+    const currentBuilding = useRef<string | null>(null);
+
+    const notifiedItems = useRef<Record<string, number>>({});
+
+    const speak = (text: string) => {
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+
+        window.speechSynthesis.speak(utterance);
+    };
 
     useEffect(() => {
         if (!navigator.geolocation) return;
 
         const watchId = navigator.geolocation.watchPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentLocation({ lat: latitude, lng: longitude });
+            async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                setCurrentLocation({
+                    lat: latitude,
+                    lng: longitude,
+                });
+
                 const now = Date.now();
 
-                // 1. NAVEGACIÓN NORMAL (Guía de ubicación)
+                // ==========================
+                // DETECTAR EDIFICIO
+                // ==========================
+
+                const userPoint = point([longitude, latitude]);
+
+                const buildingFound = locations.find((loc) => {
+                    if (loc.type !== 'building') return false;
+
+                    try {
+                        const polygon = JSON.parse(loc.boundary);
+
+                        return booleanPointInPolygon(
+                            userPoint,
+                            polygon
+                        );
+                    } catch {
+                        return false;
+                    }
+                });
+
+                if (
+                    buildingFound &&
+                    currentBuilding.current !== buildingFound.id
+                ) {
+                    currentBuilding.current = buildingFound.id;
+
+                    speak(
+                        `Has ingresado al ${buildingFound.name}`
+                    );
+                }
+
+                if (
+                    !buildingFound &&
+                    currentBuilding.current
+                ) {
+                    const previousBuilding = locations.find(
+                        (l) => l.id === currentBuilding.current
+                    );
+
+                    if (previousBuilding) {
+                        speak(
+                            `Has salido de ${previousBuilding.name}`
+                        );
+                    }
+
+                    currentBuilding.current = null;
+                }
+
+                // ==========================
+                // ESCALERAS, ASCENSORES, BAÑOS
+                // ==========================
+
                 locations.forEach((loc) => {
-                    // Validar que el backend sí mandó las coordenadas
-                    if (!loc.latitude || !loc.longitude) return; 
+                    if (
+                        ![
+                            'stairs',
+                            'elevator',
+                            'bathroom'
+                        ].includes(loc.type)
+                    ) {
+                        return;
+                    }
 
-                    const distance = calculateDistanceInMetres(latitude, longitude, loc.latitude, loc.longitude);
+                    const distance =
+                        calculateDistanceInMetres(
+                            latitude,
+                            longitude,
+                            Number(loc.latitude),
+                            Number(loc.longitude)
+                        );
+
                     if (distance <= alertDistanceSetting) {
-                        const lastNotified = notifiedHistory.current[`loc_${loc.id}`] || 0;
-                        if (now - lastNotified > 180000) { // 3 minutos anti-spam
-                            notifiedHistory.current[`loc_${loc.id}`] = now;
+                        const last =
+                            notifiedItems.current[loc.id] || 0;
 
-                            let mensaje = "";
-                            if (loc.type === 'building') {
-                                mensaje = `Has ingresado al ${loc.name}.`;
-                            } else if (loc.type === 'stairs') {
-                                mensaje = `Estás cerca de una escalera en ${loc.name}.`;
-                            } else if (loc.type === 'elevator') {
-                                mensaje = `Estás cerca de un ascensor en ${loc.name}.`;
-                            } else if (loc.type === 'bathroom') {
-                                mensaje = `Estás cerca de un baño en ${loc.name}.`;
-                            } else {
-                                mensaje = `Estás en la zona: ${loc.name}.`;
+                        if (now - last > 30000) {
+                            notifiedItems.current[loc.id] = now;
+
+                            let message = '';
+
+                            switch (loc.type) {
+                                case 'stairs':
+                                    message =
+                                        'Estás cerca de una escalera';
+                                    break;
+
+                                case 'elevator':
+                                    message =
+                                        'Estás cerca de un ascensor';
+                                    break;
+
+                                case 'bathroom':
+                                    message =
+                                        'Estás cerca de un baño';
+                                    break;
                             }
 
-                            window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(mensaje);
-                            utterance.lang = 'es-ES';
-                            window.speechSynthesis.speak(utterance);
+                            speak(message);
                         }
                     }
                 });
 
-                // 2. ALERTAS DE PELIGRO (Obstáculos reportados)
-                activeAlerts.forEach((alert) => {
-                    if (!alert.latitude || !alert.longitude) return;
+                // ==========================
+                // ALERTAS ACTIVAS
+                // ==========================
 
-                    const distance = calculateDistanceInMetres(latitude, longitude, alert.latitude, alert.longitude);
+                activeAlerts.forEach(async (alert) => {
+                    const distance =
+                        calculateDistanceInMetres(
+                            latitude,
+                            longitude,
+                            Number(alert.latitude),
+                            Number(alert.longitude)
+                        );
+
                     if (distance <= alertDistanceSetting) {
-                        const lastNotified = notifiedHistory.current[`alert_${alert.id}`] || 0;
-                        if (now - lastNotified > 180000) {
-                            notifiedHistory.current[`alert_${alert.id}`] = now;
+                        const last =
+                            notifiedItems.current[
+                                `alert-${alert.id}`
+                            ] || 0;
 
-                            // Notificación de peligro real
-                            const mensajePeligro = `¡Precaución! Obstáculo cercano en ${alert.location_name}: ${alert.description}.`;
+                        if (now - last > 30000) {
+                            notifiedItems.current[
+                                `alert-${alert.id}`
+                            ] = now;
 
-                            window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(mensajePeligro);
-                            utterance.lang = 'es-ES';
-                            window.speechSynthesis.speak(utterance);
+                            speak(
+                                `Precaución. ${alert.description}`
+                            );
 
-                            if (window.navigator.vibrate) {
-                                window.navigator.vibrate([400, 200, 400, 200, 400]); // Vibración más fuerte para peligros
+                            if (
+                                window.navigator.vibrate
+                            ) {
+                                window.navigator.vibrate([
+                                    300,
+                                    100,
+                                    300,
+                                ]);
                             }
 
                             if (userId) {
-                                createNotificationService({ user_id: userId, alert_id: alert.id })
-                                    .catch(err => console.error(err));
+                                createNotificationService({
+                                    user_id: userId,
+                                    alert_id: alert.id,
+                                }).catch(console.error);
                             }
                         }
                     }
                 });
             },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, maximumAge: 0 }
+            console.error,
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+            }
         );
 
-        return () => navigator.geolocation.clearWatch(watchId);
-    }, [locations, activeAlerts, alertDistanceSetting, userId]);
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, [
+        userId,
+        locations,
+        activeAlerts,
+        alertDistanceSetting,
+    ]);
 
     return { currentLocation };
 };
