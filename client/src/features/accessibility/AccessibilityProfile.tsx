@@ -27,9 +27,11 @@ export default function AccessibilityProfile() {
 
     return (
         <div className="min-h-screen pb-10">
+
             <ProfileHeader title="Perfil" />
 
             <main className="max-w-md mx-auto px-6 space-y-8 pb-8">
+
                 <div 
                     tabIndex={0} 
                     onFocus={() => speak(`Usuario: ${user?.name || 'Laura'}. Correo: ${user?.email || 'laura@campus.u.edu'}`)}
@@ -43,6 +45,7 @@ export default function AccessibilityProfile() {
                 </div>
 
                 <section className="space-y-4">
+
                     <div tabIndex={0} onFocus={() => speak("Configuración: Editar perfil")} className="outline-none">
                         <MenuOption
                             label="Editar perfil"
@@ -74,6 +77,7 @@ export default function AccessibilityProfile() {
                             path="/accessibility/settings/navigation"
                         />
                     </div>
+
                 </section>
 
                 <button
@@ -84,7 +88,11 @@ export default function AccessibilityProfile() {
                     <LogOut size={22} />
                     Cerrar sesión
                 </button>
+
             </main>
+
         </div>
+
     );
+    
 }

@@ -65,29 +65,39 @@ export default function NavegationSettings() {
   };
 
   return (
+
     <div className="min-h-screen pb-20">
+
       <ProfileHeader title="Navegación" />
 
       <main className="max-w-md mx-auto px-8 space-y-10 mb-8">
 
         <div onFocus={() => speak("Sección distancia de alerta")}>
+
           <DistanceSelector
             selected={distance}
             onSelect={handleDistanceChange}
           />
+
         </div>
 
         <div onFocus={() => speak("Sección tipo de alerta")}>
+
           <AlertTypeSelector
             selected={alertType}
             onSelect={handleTypeChange}
           />
+
         </div>
 
         <p className="text-center text-gray-400 text-xs mt-12">
           Estas configuraciones afectan cómo recibes las notificaciones durante tu recorrido por el campus.
         </p>
+
       </main>
+
     </div>
+
   );
+  
 }

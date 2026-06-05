@@ -58,8 +58,10 @@ export default function AccessibilityEditProfile() {
   };
 
   return (
+
     <div className="min-h-screen pb-8">
       <header className="px-8 pt-8 pb-6 flex items-center gap-4">
+
         <button
           onClick={() => navigate(-1)}
           onFocus={() => speak("Regresar")}
@@ -67,10 +69,12 @@ export default function AccessibilityEditProfile() {
         >
           <ArrowLeft size={22} className="text-gray-800" />
         </button>
+
         <h2 className="text-2xl font-bold text-[#1E293B]">Editar perfil</h2>
       </header>
 
       <main className="px-8 max-w-md mx-auto">
+
         <div className="flex flex-col items-center mb-8 text-center gap-2">
           <div className="w-20 h-20 rounded-full bg-[#296BFF] flex items-center justify-center shadow-xl shadow-blue-100">
             <User size={40} strokeWidth={1.5} className="text-white" />
@@ -117,6 +121,7 @@ export default function AccessibilityEditProfile() {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full"
               />
+
               <button
                 type="button"
                 onClick={() => {
@@ -128,6 +133,7 @@ export default function AccessibilityEditProfile() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+
             </div>
           </div>
         </div>
@@ -140,7 +146,11 @@ export default function AccessibilityEditProfile() {
         >
           {loading ? 'Guardando...' : 'Guardar cambios'}
         </button>
+
       </main>
+
     </div>
+
   );
+  
 }

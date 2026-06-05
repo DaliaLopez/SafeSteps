@@ -81,7 +81,9 @@ export default function VibrationSettings() {
   };
 
   return (
+
     <div className="min-h-screen pb-10">
+
       <ProfileHeader title="Vibración" />
 
       <main className="max-w-md mx-auto px-8 space-y-6">
@@ -97,7 +99,11 @@ export default function VibrationSettings() {
         <p className="text-center text-gray-400 text-xs mt-10">
           Los cambios se aplican automáticamente al seleccionar.
         </p>
+
       </main>
+
     </div>
+
   );
+  
 }

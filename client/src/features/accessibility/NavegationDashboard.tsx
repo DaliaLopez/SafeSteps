@@ -11,7 +11,7 @@ import { getApprovedReportsService } from '../../services/admin.service';
 import { getAccessibilitySettingsService } from '../../services/accessibility-settings.service';
 import { ReportMarkers } from '../../components/student/report/ReportMarkers';
 import { useNavigationEngine } from '../../hooks/useNavigationEngine';
-import useSupabase from '../../hooks/useSupabase';
+import { supabase } from '../../../../server/src/config/supabase';
 
 export default function NavegationDashboard() {
     const { user } = useAuth();
@@ -20,14 +20,14 @@ export default function NavegationDashboard() {
     // Marcadores de reportes aprobados en el mapa
     const [reports, setReports] = useState<ReportDTO[]>([]);
 
-    // Estados de datos cargados para alimentar el motor de voz
+    // Estados de datos cargados para el motor de voz
     const [locations, setLocations] = useState<any[]>([]);
     const [alerts, setAlerts] = useState<any[]>([]);
     const [alertDistance, setAlertDistance] = useState<number>(5);
 
-    // =====================================
+
     // CANALES EN TIEMPO REAL (SUPABASE REALTIME)
-    // =====================================
+
     useEffect(() => {
         const refreshData = async () => {
             try {
@@ -63,9 +63,9 @@ export default function NavegationDashboard() {
         };
     }, [supabase]);
 
-    // =====================================
-    // CARGA INICIAL DESDE LAS APIS (AXIOS)
-    // =====================================
+
+    // CARGA INICIAL DESDE LAS APIS 
+
     useEffect(() => {
         const loadInitialData = async () => {
             try {
@@ -86,7 +86,6 @@ export default function NavegationDashboard() {
         loadInitialData();
     }, [user]);
 
-    // Inicializamos el motor GPS unificado
     const { currentLocation } = useNavigationEngine(user?.id, locations, alerts, alertDistance);
 
     const speak = (text: string, callback?: () => void) => {
@@ -97,7 +96,6 @@ export default function NavegationDashboard() {
         window.speechSynthesis.speak(utterance);
     };
 
-    // 🌟 LIMPIO: Mensaje de bienvenida estándar que no spamea alertas lejanas al entrar
     const repeatNavegationInfo = () => {
         speak(
             "Pantalla de navegación activa. El asistente de voz te guiará de forma automática a medida que camines por el campus. " +
@@ -107,34 +105,41 @@ export default function NavegationDashboard() {
 
     useEffect(() => {
         repeatNavegationInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     return (
+
         <div className="h-screen flex flex-col overflow-hidden bg-white">
             <div className="relative z-20 outline-none" tabIndex={0} onFocus={() => speak("Navegación activa")}>
                 <HeaderNavegation />
             </div>
 
             <main className="flex-1 relative z-10 -mt-16 outline-none" tabIndex={0} onFocus={() => speak("Mapa de navegación en tiempo real")}>
+                
                 <MapView 
                     center={currentLocation ? [currentLocation.lat, currentLocation.lng] : universityCenter} 
                     zoom={17}
                 >
                     <ReportMarkers reports={reports} />
                     {currentLocation && (
+
                         <CircleMarker
                             center={[currentLocation.lat, currentLocation.lng]}
                             radius={8}
                             pathOptions={{ fillColor: '#296BFF', color: 'white', weight: 2, fillOpacity: 1 }}
                         />
+
                     )}
                 </MapView>
+
             </main>
 
             <div className="relative z-20">
                 <NavbarNavegation onRepeat={repeatNavegationInfo} />
             </div>
+
         </div>
+
     );
+    
 }

@@ -87,12 +87,15 @@ export default function AudioSettings() {
 
   return (
     <div className="min-h-screen pb-10">
+
       <ProfileHeader title="Audio" />
 
       <main className="max-w-md mx-auto px-8 space-y-6">
+
         <h3 className="ml-2">Configuración de audio</h3>
 
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 space-y-5">
+
           <div
             onMouseUp={async () => { speak(`Volumen al ${volume} por ciento`);
               if (user?.id) {
@@ -116,6 +119,7 @@ export default function AudioSettings() {
               }
             }}
           >
+
             <VolumeControl
               value={volume}
               onChange={(newVolume) => {
@@ -136,7 +140,11 @@ export default function AudioSettings() {
         <p className="text-center text-gray-400 text-xs px-4">
           Toca las opciones para escuchar su estado actual.
         </p>
+
       </main>
+
     </div>
+
   );
+  
 }

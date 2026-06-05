@@ -68,6 +68,7 @@ export default function AccessibilityDashboard() {
     }, [user]);
 
     return (
+
         <div className="h-screen flex flex-col overflow-hidden bg-white">
             <div className="relative z-20 outline-none" tabIndex={0} onFocus={() => speak(`Bienvenido o bienvenida, ${user?.name || 'usuario'}.`)}>
                 <Header />
@@ -82,6 +83,9 @@ export default function AccessibilityDashboard() {
             <div className="relative z-20">
                 <NavbarAccessibility />
             </div>
+
         </div>
+
     );
+    
 }

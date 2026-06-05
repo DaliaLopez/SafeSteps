@@ -88,6 +88,7 @@ export default function AlertPage() {
   const styles = getFullStyles(mainAlert.dangerLevel);
 
   return (
+
     <div className={`h-screen flex flex-col ${styles.bg} transition-colors duration-500`}>
 
       <main
@@ -95,6 +96,7 @@ export default function AlertPage() {
         tabIndex={0}
         onFocus={() => speak(`¡Atención! ${mainAlert.description}. Estás a ${mainAlert.distance || 'pocos metros'}. Nivel de riesgo: ${mainAlert.dangerLevel}. Opciones disponibles en la parte inferior: repetir información y continuar.`)}
       >
+
         <div className={`${styles.iconBg} p-8 rounded-full mb-8`}>
           {styles.icon}
         </div>
@@ -109,9 +111,15 @@ export default function AlertPage() {
           <h2 className="text-white text-2xl font-black leading-none">
             {mainAlert.description}
           </h2>
+
         </div>
+
       </main>
+
       <NavbarAlert />
+
     </div>
+
   );
+  
 }
