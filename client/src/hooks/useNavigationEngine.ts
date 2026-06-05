@@ -118,7 +118,6 @@ export const useNavigationEngine = (
                     }
                 }
 
-                // --- Control de Infraestructuras Específicas (Baños, Escaleras) ---
                 if (zoneFound) {
                     if (currentFixedZoneId.current !== zoneFound.id) {
                         currentFixedZoneId.current = zoneFound.id;
@@ -141,9 +140,6 @@ export const useNavigationEngine = (
                     currentFixedZoneId.current = null;
                 }
 
-                // ===================================================
-                // 2. ALERTAS ACTIVAS INTERNAS (CON DELAY PARA RESPETAR EL ORDEN)
-                // ===================================================
                 if (currentBuilding.current) {
                     activeAlerts.forEach((alert) => {
                         if (
@@ -180,9 +176,6 @@ export const useNavigationEngine = (
                                     `Tipo de problema: ${tipoObstaculoEspañol}. ` +
                                     `Nivel de riesgo: ${nivelRiesgoEspañol}.`;
 
-                                // 🌟 AQUÍ OCURRE LA MAGIA: Si acabamos de entrar al edificio, esperamos 
-                                // 2.5 segundos para dejar que el asistente diga el nombre del bloque primero.
-                                // Si ya estábamos adentro caminando, la alerta suena de inmediato.
                                 if (justEnteredBuilding) {
                                     setTimeout(() => {
                                         speak(fraseAlerta);
