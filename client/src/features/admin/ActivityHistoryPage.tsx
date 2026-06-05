@@ -36,7 +36,6 @@ export default function ActivityHistoryPage() {
         loadActivity();
     }, []);
 
-    // Función de filtrado por fecha
     const filteredActivities = activities.filter(activity => {
         if (!activity.created_at) return false;
         const date = new Date(activity.created_at);
