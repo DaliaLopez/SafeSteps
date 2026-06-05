@@ -1,17 +1,10 @@
 import api from './api';
 import type {CheckLocationDTO, CreateReportDTO, ReportDTO, NotificationDTO } from '../types/student.types'
 
-
-// --- UBICACIÓN Y ALERTAS EN TIEMPO REAL ---
-
-// Verifica si el estudiante está dentro de un edificio o zona.
-
 export const checkIfUserIsInsideService = async (coords: CheckLocationDTO): Promise<any> => {
     const { data } = await api.post('/locations/check', coords);
     return data;
 };
-
-// Obtiene la alerta más reciente del lugar donde se encuentra el estudiante.
 
 export const getAlertByLocationService = async (locationId: string): Promise<any> => {
     const { data } = await api.get(`/alerts/location/${locationId}`);
