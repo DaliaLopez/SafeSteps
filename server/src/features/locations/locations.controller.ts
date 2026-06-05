@@ -50,7 +50,6 @@ export const createLocationController = async (
     }
 };
 
-// Saber en qué zona está el usuario
 export const checkLocationController = async (
     req: Request,
     res: Response,
@@ -74,8 +73,6 @@ export const checkLocationController = async (
     }
 };
 
-
-// Eliminar zona (solo admin)
 export const deleteLocationController = async (
     req: Request,
     res: Response,
