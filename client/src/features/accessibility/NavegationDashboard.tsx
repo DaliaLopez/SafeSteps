@@ -114,7 +114,7 @@ export default function NavegationDashboard() {
                     setAlertDistance(
                         parseInt(
                             settings.alert_distance.split(' ')[0]
-                        ) || 5
+                        ) || 3
                     );
                 }
 
@@ -169,47 +169,10 @@ export default function NavegationDashboard() {
         window.speechSynthesis.speak(utterance);
     };
 
-    const repeatNavegationInfo = async () => {
-        try {
-            let message =
-                `Pantalla de navegación activa. `;
-
-            const alertsData =
-                await getAlertsForAccessibilityService();
-
-            if (
-                alertsData &&
-                alertsData.length > 0
-            ) {
-                const pointsDescription =
-                    alertsData
-                        .slice(0, 3)
-                        .map(
-                            (a: any) =>
-                                a.description ||
-                                "Obstáculo no especificado"
-                        )
-                        .join(", ");
-
-                message +=
-                    `Puntos de interés detectados cerca de ti: ${pointsDescription}. `;
-            } else {
-                message +=
-                    "No se detectan obstáculos o alertas en tu zona actual. ";
-            }
-
-            message +=
-                "Opciones disponibles en la parte inferior: detener navegación y repetir información.";
-
-            speak(message);
-
-        } catch (error) {
-            console.error(error);
-
-            speak(
-                "Pantalla de navegación activa. Error al cargar puntos cercanos. Opciones disponibles: detener navegación y repetir información."
-            );
-        }
+    const repeatNavegationInfo = () => {
+        speak(
+            "Pantalla de navegación activa. Explorando entorno. Opciones disponibles en la parte inferior: detener navegación y repetir información."
+        );
     };
 
     useEffect(() => {

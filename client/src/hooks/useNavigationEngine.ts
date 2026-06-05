@@ -77,12 +77,12 @@ export const useNavigationEngine = (
                 }
 
                 // ==========================
-                // 2. ALERTAS ACTIVAS (SOLO SI ESTÁ DENTRO DEL EDIFICIO)
+                // 2. ALERTAS Y ZONAS (SOLO SI ESTÁ DENTRO DEL EDIFICIO)
                 // ==========================
                 if (currentBuilding.current) {
+                    
+                    // --- A. EVALUAR ALERTAS ACTIVAS ---
                     activeAlerts.forEach((alert) => {
-                        // REGLA CLAVE: La alerta debe pertenecer al edificio actual
-                        // Y debe tener coordenadas válidas para medir la distancia
                         if (
                             alert.location_id !== currentBuilding.current ||
                             !alert.latitude ||
@@ -102,16 +102,18 @@ export const useNavigationEngine = (
                             const alertKey = `alert-${alert.id}`;
                             const last = notifiedItems.current[alertKey] || 0;
 
-                            // Prevenir spam (retraso de 30 segundos)
                             if (now - last > 30000) {
                                 notifiedItems.current[alertKey] = now;
 
-                                speak(`Precaución. ${alert.description}`);
+                                const tipoProblema = alert.problem_type ? `Problema detectado: ${alert.problem_type}. ` : '';
+                                const nivelRiesgo = alert.danger_level ? `Nivel de riesgo: ${alert.danger_level}. ` : '';
+                                
+                                const mensajeFinal = `Precaución. ${tipoProblema}${nivelRiesgo}${alert.description}`;
+
+                                speak(mensajeFinal);
 
                                 if (window.navigator.vibrate) {
-                                    window.navigator.vibrate([
-                                        300, 100, 300,
-                                    ]);
+                                    window.navigator.vibrate([300, 100, 300]);
                                 }
 
                                 if (userId) {
@@ -119,6 +121,59 @@ export const useNavigationEngine = (
                                         user_id: userId,
                                         alert_id: alert.id,
                                     }).catch(console.error);
+                                }
+                            }
+                        }
+                    });
+
+                    // --- B. EVALUAR ZONAS (ESCALERAS, BAÑOS, ASCENSORES, RAMPAS, ETC) ---
+                    locations.forEach((loc) => {
+                        // Ignoramos los edificios porque ya los manejamos con el polígono arriba
+                        if (
+                            loc.type === 'building' ||
+                            !loc.latitude || 
+                            !loc.longitude
+                        ) {
+                            return;
+                        }
+
+                        const distance = calculateDistanceInMetres(
+                            latitude,
+                            longitude,
+                            Number(loc.latitude),
+                            Number(loc.longitude)
+                        );
+
+                        if (distance <= alertDistanceSetting) {
+                            const zoneKey = `zone-${loc.id}`;
+                            const last = notifiedItems.current[zoneKey] || 0;
+
+                            if (now - last > 30000) {
+                                notifiedItems.current[zoneKey] = now;
+
+                                let message = '';
+                                switch (loc.type) {
+                                    case 'stairs':
+                                        message = `Estás cerca de una escalera en ${loc.name}.`;
+                                        break;
+                                    case 'elevator':
+                                        message = `Estás cerca de un ascensor en ${loc.name}.`;
+                                        break;
+                                    case 'bathroom':
+                                        message = `Estás cerca de un baño en ${loc.name}.`;
+                                        break;
+                                    case 'ramp':
+                                        message = `Estás cerca de una rampa en ${loc.name}.`;
+                                        break;
+                                    default:
+                                        message = `Estás en la zona: ${loc.name}.`;
+                                        break;
+                                }
+
+                                speak(message);
+
+                                if (window.navigator.vibrate) {
+                                    window.navigator.vibrate([300, 100, 300]);
                                 }
                             }
                         }
