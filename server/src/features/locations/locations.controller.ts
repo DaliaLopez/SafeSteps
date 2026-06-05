@@ -8,7 +8,6 @@ import {
 } from './locations.service';
 import { LocationType } from './locations.types'; 
 
-// Obtener todas las zonas registradas en el sistema
 export const getLocationsController = async (
     _req: Request,
     res: Response,
@@ -22,7 +21,6 @@ export const getLocationsController = async (
     }
 };
 
-// Crear una nueva zona (ej: un edificio o una rampa)
 export const createLocationController = async (
     req: Request,
     res: Response,
