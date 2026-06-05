@@ -54,10 +54,13 @@ export default function DashboardPage() {
         <MapView center={CAMPUS_CENTER}>
           <ReportMarkers reports={reports} />
         </MapView>
-        
+
       </div>
 
       <NavbarAdmin />
+
     </div>
+
   )
+  
 }
