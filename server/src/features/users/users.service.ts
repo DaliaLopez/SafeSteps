@@ -2,13 +2,11 @@ import { pool } from '../../config/database';
 import Boom from '@hapi/boom';
 import type { CreateUserDBDTO, UpdateUserDTO } from './users.types';
 
-// obtener todos los usuarios
 export const getUsersService = async () => {
     const result = await pool.query(`SELECT * FROM users`);
     return result.rows;
 };
 
-// obtener por id
 export const getUserByIdService = async (id: string) => {
     const result = await pool.query(
         `SELECT * FROM users WHERE id = $1`,
@@ -22,7 +20,6 @@ export const getUserByIdService = async (id: string) => {
     return result.rows[0];
 };
 
-// Crear usuario en la base de datos
 export const createUserDBService = async (user: CreateUserDBDTO) => {
     const result = await pool.query(
         `INSERT INTO users (id, name, role, email)
@@ -34,7 +31,6 @@ export const createUserDBService = async (user: CreateUserDBDTO) => {
     return result.rows[0];
 };
 
-// actualizar nombre del usuario
 export const updateUserService = async (user: UpdateUserDTO) => {
     const result = await pool.query(
         `UPDATE users 
@@ -54,7 +50,6 @@ export const updateUserService = async (user: UpdateUserDTO) => {
     return result.rows[0];
 };
 
-// eliminar usuario
 export const deleteUserService = async (id: string) => {
     const result = await pool.query(
         `DELETE FROM users WHERE id = $1 RETURNING *`,

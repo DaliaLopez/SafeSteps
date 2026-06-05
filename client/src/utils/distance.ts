@@ -1,14 +1,12 @@
-// Convierte grados a radianes
 const toRad = (value: number) => (value * Math.PI) / 180;
 
-// Retorna la distancia en metros entre dos coordenadas
 export const calculateDistanceInMetres = (
     lat1: number,
     lon1: number,
     lat2: number,
     lon2: number
 ): number => {
-    const R = 6371e3; // Radio de la tierra en metros
+    const R = 6371e3; 
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
 

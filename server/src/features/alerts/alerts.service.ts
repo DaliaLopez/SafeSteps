@@ -1,11 +1,6 @@
 import { pool } from '../../config/database';
 import type { CreateAlertDTO } from './alerts.types';
 
-// Crear alerta manual (ADMIN) Es cuando el admin detecta algo directamente
-// - "Rampa en mantenimiento"
-
-// IMPORTANTE: Las alertas son el “estado real del sistema” (lo que el usuario FINAL debe escuchar/ver)
-
 export const createAlertService = async (alert: CreateAlertDTO) => {
     const result = await pool.query(
         `
@@ -29,19 +24,6 @@ export const createAlertService = async (alert: CreateAlertDTO) => {
     return result.rows[0];
 };
 
-
-// Se usa cuando el usuario entra a una zona (location)
-// Ejemplo: el usuario entra a "Bloque A"
-//
-// Qué hace?
-// 1. Busca alertas de ese lugar
-// 2. Filtra SOLO las activas (is_active = true)
-// 3. Devuelve la MÁS RECIENTE
-//
-// Para qué sirve?
-// Para decirle al usuario:
-// "Cuidado, hay un problema aquí"
-
 export const getAlertByLocationService = async (locationId: string) => {
     const result = await pool.query(
         `SELECT a.id, a.message, l.name as building_name
@@ -59,16 +41,6 @@ export const getAlertByLocationService = async (locationId: string) => {
     return result.rows[0];
 };
 
-
-// Lista general de alertas activas
-// Para qué sirve?
-// - Accesibilidad (lector de pantalla)
-// - Mostrar todas las advertencias activas
-// - Panel general del sistema
-//
-// Ejemplo:
-// - "Bloque A → piso mojado"
-
 export const getAlertsForAccessibilityService = async () => {
     const result = await pool.query(
         `
@@ -79,16 +51,17 @@ export const getAlertsForAccessibilityService = async () => {
             a.latitude,
             a.longitude,
             l.name as location_name,
-            l.type,
-            -- Traemos los campos del reporte (si existe)
-            r.problem_type,
-            r.danger_level
+            -- 🏢 Renombramos l.type para que no pise la variable 'type' de la alerta en el frontend
+            l.type as location_fixed_type,
+            -- 🛡️ Si viene de un reporte usamos su tipo, si es alerta manual del admin va como 'obstacle'
+            COALESCE(r.problem_type, 'obstacle') as problem_type,
+            -- 🚨 Si no hay reporte asociado, le asignamos riesgo medio automático para la locución
+            COALESCE(r.danger_level, 'medium') as danger_level
         FROM alerts a
         JOIN locations l
             ON l.id = a.location_id
-        -- Hacemos LEFT JOIN por si es una alerta manual del admin que no tiene reporte
         LEFT JOIN reports r 
-            ON a.report_id = r.id
+            ON r.description = a.message -- Acople seguro si report_id viene null
         WHERE a.is_active = true
         ORDER BY l.name ASC
         `
@@ -96,21 +69,6 @@ export const getAlertsForAccessibilityService = async () => {
 
     return result.rows;
 };
-
-
-// Desactivar alerta. Se usa cuando el problema YA SE SOLUCIONÓ
-//
-// Ejemplo:
-// - ya arreglaron la rampa
-// - ya secaron el piso
-//
-// Qué hace?
-// - NO borra la alerta
-// - solo la "apaga"
-//
-// Por qué no borrar?
-// → historial
-
 
 export const deactivateAlertService = async (locationId: string) => {
     const result = await pool.query(

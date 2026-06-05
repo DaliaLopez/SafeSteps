@@ -30,8 +30,6 @@ export const getReportByIdService = async (id: string) => {
     return result.rows[0];
 };
 
-// Lista de pendientes para el admin
-// Aquí es donde el admin decide aprobar o rechazar
 export const getPendingReportsService = async () => {
     const result = await pool.query(`
         SELECT r.*,
@@ -46,9 +44,6 @@ export const getPendingReportsService = async () => {
     return result.rows
 }
 
-// Crear reporte (lo hace el usuario)
-// Ej: "hay una escalera dañada aquí"
-// Guarda un PUNTO en el mapa (no área)
 export const createReportService = async (report: CreateReportDTO) => {
     try {
         const result = await pool.query(

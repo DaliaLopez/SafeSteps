@@ -16,21 +16,26 @@ import useSupabase from '../../hooks/useSupabase';
 export default function NavegationDashboard() {
     const { user } = useAuth();
     const universityCenter: [number, number] = [3.341, -76.530];
-    const supabase = useSupabase();
 
+    // Marcadores de reportes aprobados en el mapa
     const [reports, setReports] = useState<ReportDTO[]>([]);
+
+    // Estados de datos cargados para alimentar el motor de voz
     const [locations, setLocations] = useState<any[]>([]);
     const [alerts, setAlerts] = useState<any[]>([]);
     const [alertDistance, setAlertDistance] = useState<number>(5);
 
     // =====================================
-    // REALTIME REPORTES + ALERTAS
+    // CANALES EN TIEMPO REAL (SUPABASE REALTIME)
     // =====================================
     useEffect(() => {
         const refreshData = async () => {
             try {
-                setReports(await getApprovedReportsService());
-                setAlerts(await getAlertsForAccessibilityService());
+                const approvedData = await getApprovedReportsService();
+                setReports(approvedData);
+
+                const alertsData = await getAlertsForAccessibilityService();
+                setAlerts(alertsData);
             } catch (error) {
                 console.error("Error actualizando navegación:", error);
             }
@@ -38,15 +43,19 @@ export default function NavegationDashboard() {
 
         refreshData();
 
-        const alertsChannel = supabase.channel("realtime-alerts-navigation")
+        const alertsChannel = supabase
+            .channel("realtime-alerts-navigation")
             .on("postgres_changes", { event: "*", schema: "public", table: "alerts" }, () => {
-                setTimeout(() => refreshData(), 300);
-            }).subscribe();
+                setTimeout(() => { refreshData(); }, 300);
+            })
+            .subscribe();
 
-        const reportsChannel = supabase.channel("realtime-reports-navigation")
+        const reportsChannel = supabase
+            .channel("realtime-reports-navigation")
             .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => {
-                setTimeout(() => refreshData(), 300);
-            }).subscribe();
+                setTimeout(() => { refreshData(); }, 300);
+            })
+            .subscribe();
 
         return () => {
             supabase.removeChannel(alertsChannel);
@@ -55,17 +64,21 @@ export default function NavegationDashboard() {
     }, [supabase]);
 
     // =====================================
-    // CARGA INICIAL
+    // CARGA INICIAL DESDE LAS APIS (AXIOS)
     // =====================================
     useEffect(() => {
         const loadInitialData = async () => {
             try {
                 if (user?.id) {
                     const settings = await getAccessibilitySettingsService(user.id);
-                    setAlertDistance(parseInt(settings.alert_distance.split(' ')[0]) || 3);
+                    setAlertDistance(parseInt(settings.alert_distance.split(' ')[0]) || 5);
                 }
-                setLocations(await getLocationsService());
-                setAlerts(await getAlertsForAccessibilityService());
+
+                const locationsData = await getLocationsService();
+                setLocations(locationsData);
+
+                const alertsData = await getAlertsForAccessibilityService();
+                setAlerts(alertsData);
             } catch (error) {
                 console.error(error);
             }
@@ -73,9 +86,7 @@ export default function NavegationDashboard() {
         loadInitialData();
     }, [user]);
 
-    // =====================================
-    // MOTOR GPS Y VOZ
-    // =====================================
+    // Inicializamos el motor GPS unificado
     const { currentLocation } = useNavigationEngine(user?.id, locations, alerts, alertDistance);
 
     const speak = (text: string, callback?: () => void) => {
@@ -86,18 +97,19 @@ export default function NavegationDashboard() {
         window.speechSynthesis.speak(utterance);
     };
 
+    // 🌟 LIMPIO: Mensaje de bienvenida estándar que no spamea alertas lejanas al entrar
     const repeatNavegationInfo = () => {
-        speak("Pantalla de navegación activa. Explorando entorno. Opciones disponibles en la parte inferior: detener navegación y repetir información.");
+        speak(
+            "Pantalla de navegación activa. El asistente de voz te guiará de forma automática a medida que camines por el campus. " +
+            "Opciones disponibles en la parte inferior: detener navegación y repetir información."
+        );
     };
 
     useEffect(() => {
         repeatNavegationInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    // =====================================
-    // UI
-    // =====================================
     return (
         <div className="h-screen flex flex-col overflow-hidden bg-white">
             <div className="relative z-20 outline-none" tabIndex={0} onFocus={() => speak("Navegación activa")}>
@@ -105,7 +117,10 @@ export default function NavegationDashboard() {
             </div>
 
             <main className="flex-1 relative z-10 -mt-16 outline-none" tabIndex={0} onFocus={() => speak("Mapa de navegación en tiempo real")}>
-                <MapView center={currentLocation ? [currentLocation.lat, currentLocation.lng] : universityCenter} zoom={17}>
+                <MapView 
+                    center={currentLocation ? [currentLocation.lat, currentLocation.lng] : universityCenter} 
+                    zoom={17}
+                >
                     <ReportMarkers reports={reports} />
                     {currentLocation && (
                         <CircleMarker

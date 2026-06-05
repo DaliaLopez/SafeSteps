@@ -1,13 +1,10 @@
 import { pool } from '../../config/database';
 import type { CreateNotificationDTO } from './notifications.types';
 
-// Crear notificación para un usuario
-// Se usa cuando el usuario entra a una zona con alerta
 export const createNotificationService = async (
     data: CreateNotificationDTO
 ) => {
-    // ANTI-SPAM 
-    // Evita enviar la misma alerta muchas veces seguidas
+    
     const lastNotification = await pool.query(
         `SELECT * FROM notifications 
         WHERE user_id = $1 
