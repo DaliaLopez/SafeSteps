@@ -15,82 +15,38 @@ import useSupabase from '../../hooks/useSupabase';
 
 export default function NavegationDashboard() {
     const { user } = useAuth();
+    const universityCenter: [number, number] = [3.341, -76.530];
+    const supabase = useSupabase();
 
-    const universityCenter: [number, number] = [
-        3.341,
-        -76.530
-    ];
-
-    // Marcadores de reportes aprobados
     const [reports, setReports] = useState<ReportDTO[]>([]);
-
-    // Motor de navegación
     const [locations, setLocations] = useState<any[]>([]);
     const [alerts, setAlerts] = useState<any[]>([]);
     const [alertDistance, setAlertDistance] = useState<number>(5);
 
-    const supabase = useSupabase();
-
     // =====================================
     // REALTIME REPORTES + ALERTAS
     // =====================================
-
     useEffect(() => {
         const refreshData = async () => {
             try {
-                const approvedData =
-                    await getApprovedReportsService();
-
-                setReports(approvedData);
-
-                const alertsData =
-                    await getAlertsForAccessibilityService();
-
-                setAlerts(alertsData);
-
+                setReports(await getApprovedReportsService());
+                setAlerts(await getAlertsForAccessibilityService());
             } catch (error) {
-                console.error(
-                    "Error actualizando navegación:",
-                    error
-                );
+                console.error("Error actualizando navegación:", error);
             }
         };
 
         refreshData();
 
-        const alertsChannel = supabase
-            .channel("realtime-alerts-navigation")
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "alerts",
-                },
-                () => {
-                    setTimeout(() => {
-                        refreshData();
-                    }, 300);
-                }
-            )
-            .subscribe();
+        const alertsChannel = supabase.channel("realtime-alerts-navigation")
+            .on("postgres_changes", { event: "*", schema: "public", table: "alerts" }, () => {
+                setTimeout(() => refreshData(), 300);
+            }).subscribe();
 
-        const reportsChannel = supabase
-            .channel("realtime-reports-navigation")
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "reports",
-                },
-                () => {
-                    setTimeout(() => {
-                        refreshData();
-                    }, 300);
-                }
-            )
-            .subscribe();
+        const reportsChannel = supabase.channel("realtime-reports-navigation")
+            .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => {
+                setTimeout(() => refreshData(), 300);
+            }).subscribe();
 
         return () => {
             supabase.removeChannel(alertsChannel);
@@ -101,147 +57,68 @@ export default function NavegationDashboard() {
     // =====================================
     // CARGA INICIAL
     // =====================================
-
     useEffect(() => {
         const loadInitialData = async () => {
             try {
                 if (user?.id) {
-                    const settings =
-                        await getAccessibilitySettingsService(
-                            user.id
-                        );
-
-                    setAlertDistance(
-                        parseInt(
-                            settings.alert_distance.split(' ')[0]
-                        ) || 3
-                    );
+                    const settings = await getAccessibilitySettingsService(user.id);
+                    setAlertDistance(parseInt(settings.alert_distance.split(' ')[0]) || 3);
                 }
-
-                const locationsData =
-                    await getLocationsService();
-
-                setLocations(locationsData);
-
-                const alertsData =
-                    await getAlertsForAccessibilityService();
-
-                setAlerts(alertsData);
-
+                setLocations(await getLocationsService());
+                setAlerts(await getAlertsForAccessibilityService());
             } catch (error) {
                 console.error(error);
             }
         };
-
         loadInitialData();
     }, [user]);
 
     // =====================================
-    // MOTOR GPS
+    // MOTOR GPS Y VOZ
     // =====================================
+    const { currentLocation } = useNavigationEngine(user?.id, locations, alerts, alertDistance);
 
-    const { currentLocation } = useNavigationEngine(
-        user?.id,
-        locations,
-        alerts,
-        alertDistance
-    );
-
-    // =====================================
-    // VOZ
-    // =====================================
-
-    const speak = (
-        text: string,
-        callback?: () => void
-    ) => {
+    const speak = (text: string, callback?: () => void) => {
         window.speechSynthesis.cancel();
-
-        const utterance =
-            new SpeechSynthesisUtterance(text);
-
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
-
-        if (callback) {
-            utterance.onend = () => callback();
-        }
-
+        if (callback) utterance.onend = () => callback();
         window.speechSynthesis.speak(utterance);
     };
 
     const repeatNavegationInfo = () => {
-        speak(
-            "Pantalla de navegación activa. Explorando entorno. Opciones disponibles en la parte inferior: detener navegación y repetir información."
-        );
+        speak("Pantalla de navegación activa. Explorando entorno. Opciones disponibles en la parte inferior: detener navegación y repetir información.");
     };
 
     useEffect(() => {
         repeatNavegationInfo();
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     // =====================================
     // UI
     // =====================================
-
     return (
         <div className="h-screen flex flex-col overflow-hidden bg-white">
-
-            <div
-                className="relative z-20 outline-none"
-                tabIndex={0}
-                onFocus={() =>
-                    speak("Navegación activa")
-                }
-            >
+            <div className="relative z-20 outline-none" tabIndex={0} onFocus={() => speak("Navegación activa")}>
                 <HeaderNavegation />
             </div>
 
-            <main
-                className="flex-1 relative z-10 -mt-16 outline-none"
-                tabIndex={0}
-                onFocus={() =>
-                    speak(
-                        "Mapa de navegación en tiempo real"
-                    )
-                }
-            >
-                <MapView
-                    center={
-                        currentLocation
-                            ? [
-                                currentLocation.lat,
-                                currentLocation.lng
-                            ]
-                            : universityCenter
-                    }
-                    zoom={17}
-                >
+            <main className="flex-1 relative z-10 -mt-16 outline-none" tabIndex={0} onFocus={() => speak("Mapa de navegación en tiempo real")}>
+                <MapView center={currentLocation ? [currentLocation.lat, currentLocation.lng] : universityCenter} zoom={17}>
                     <ReportMarkers reports={reports} />
-
                     {currentLocation && (
                         <CircleMarker
-                            center={[
-                                currentLocation.lat,
-                                currentLocation.lng,
-                            ]}
+                            center={[currentLocation.lat, currentLocation.lng]}
                             radius={8}
-                            pathOptions={{
-                                fillColor: '#296BFF',
-                                color: 'white',
-                                weight: 2,
-                                fillOpacity: 1,
-                            }}
+                            pathOptions={{ fillColor: '#296BFF', color: 'white', weight: 2, fillOpacity: 1 }}
                         />
                     )}
                 </MapView>
             </main>
 
             <div className="relative z-20">
-                <NavbarNavegation
-                    onRepeat={repeatNavegationInfo}
-                />
+                <NavbarNavegation onRepeat={repeatNavegationInfo} />
             </div>
         </div>
     );
